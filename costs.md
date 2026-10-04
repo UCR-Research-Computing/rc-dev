@@ -39,7 +39,7 @@ HPCC figures are UC internal rates. External and non-UC rates differ: see the [H
 Some services carry no recharge to the lab today:
 
 - **Campus collaboration storage** (Google Drive, OneDrive) within the quotas ITS publishes on its [storage page](https://its.ucr.edu/storage).
-- **Ursa Major Tier 1:** AI model access for research (with a per-lab allowance), specialized hardware not available on the HPCC (within limits set per project), and archive storage. See [KB005: Ursa Major service tiers]({{ '/kb/kb005-ursa-major-service-tiers/' | relative_url }}). Other Ursa Major cloud work is recharged.
+- **Ursa Major Tier 1:** AI model access for research (with a per-lab allowance), exotic hardware not available on the HPCC (by consultation, within limits set per project), and archive storage. See [KB005: Ursa Major service tiers]({{ '/kb/kb005-ursa-major-service-tiers/' | relative_url }}). Other Ursa Major cloud work is recharged.
 - **National allocations** (NSF ACCESS, NAIRR Pilot, NRP Nautilus, OSG), which are awarded by those programs rather than sold.
 - **Consultation** with Research Computing on choosing services, planning projects and grant preparation.
 

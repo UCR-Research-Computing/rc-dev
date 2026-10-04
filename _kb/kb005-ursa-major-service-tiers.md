@@ -21,18 +21,11 @@ Projects set up before October 2026 may still be arranged under the earlier tier
 
 Access to generative AI models for research and programming, through a service Research Computing manages, with a per-lab allowance. The allowance and the models offered are set when access is arranged and may change. Use beyond the allowance, and models or services outside it, are recharged.
 
-### 2. Specialized hardware not available on campus
+### 2. Exotic hardware not available on campus
 
-Hardware the HPCC cluster does not offer and that is hard to find elsewhere, provided through a Research Computing HPC cluster in Google Cloud, within limits set per project. Examples:
+Hardware the HPCC cluster does not offer and that is hard to find elsewhere, such as Google Cloud TPUs or Arm processors, provided through a Research Computing HPC cluster in Google Cloud, within limits set per project.
 
-- very large memory per node;
-- very high node counts for a single job;
-- very high single-core clock speeds or memory bandwidth;
-- fast local NVMe storage or data-processing units (DPUs) for heavy data movement;
-- other processor architectures, such as Arm or recent Intel Xeon generations;
-- Google Cloud TPUs.
-
-Work that runs well on the HPCC belongs on the HPCC. Requests are reviewed to confirm the hardware is needed and to set the project's limits.
+Access starts with a consultation. We look at the work with you, confirm it needs hardware the HPCC does not have, and set the project's limits. Work that runs well on the HPCC belongs on the HPCC.
 
 ### 3. Archive storage
 

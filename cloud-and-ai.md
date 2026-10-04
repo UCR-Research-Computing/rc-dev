@@ -39,7 +39,7 @@ The [RAISE Institute](https://raise.ucr.edu/) (Riverside Artificial Intelligence
 
 UCR researchers reach the major cloud providers in two ways:
 
-- **[Ursa Major]({{ '/services/ursa-major/' | relative_url }})**, UCR's Google Cloud research program, with campus-supported AI model access, specialized hardware and archive storage, and recharged projects for other cloud work.
+- **[Ursa Major]({{ '/services/ursa-major/' | relative_url }})**, UCR's Google Cloud research program, with campus-supported AI model access, exotic hardware and archive storage, and recharged projects for other cloud work.
 - **[Cloud accounts]({{ '/services/cloud-accounts/' | relative_url }})** under University of California agreements with AWS, Google Cloud and Azure, billed to your funds through ITS.
 
 Cloud can be the right answer when you need managed services, elastic scale for a short time, or tools that do not exist on campus. For long-running batch or GPU work, the HPCC usually costs the lab less. [Ask us]({{ '/help/' | relative_url }}) to compare for your case.
