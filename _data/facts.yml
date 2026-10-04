@@ -85,17 +85,17 @@ hpcc_software:
   owner: HPCC
 cephrds_rent:
   label: CephRDS rental (pilot terms)
-  value: "$40 per TB per year"
-  source: "Research Computing CephRDS terms (pilot)"
+  value: "$50 per TB per year"
+  source: "CephRDS Sustainability and Financial Model (Research Computing, Sep 2026)"
   url: ""
-  as_of: 2026-02-23
+  as_of: 2026-09-16
   owner: Research Computing
 cephrds_purchase:
   label: CephRDS purchased capacity (pilot terms)
-  value: "$200 per usable TB for the 5-year hardware lifecycle"
-  source: "Research Computing CephRDS terms (pilot)"
+  value: "$250 per usable TB, one time, for the 5-year hardware lifecycle"
+  source: "CephRDS Sustainability and Financial Model (Research Computing, Sep 2026)"
   url: ""
-  as_of: 2026-02-23
+  as_of: 2026-09-16
   owner: Research Computing
 cloud_admin_setup:
   label: Cloud account setup fee (enclave, cloud discount programs)
