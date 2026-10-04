@@ -10,7 +10,7 @@ redirect_from:
   - /Knowledge_Base/KB007_Tier2_Recharge_Workflow.html
 ---
 
-Some Google Cloud projects are billed to a lab funding source, for example projects that use GPUs or marketplace models, or that go beyond campus pool limits. This article describes how such a "Tier 2" recharge project is set up. See [KB005](../kb005-ursa-major-service-tiers/) for the tiers.
+Some Google Cloud projects are billed to a lab funding source, which covers all Ursa Major cloud work outside Tier 1 (for example VMs, databases, analytics, Standard storage, GPUs and marketplace models). This article describes how such a "Tier 2" recharge project is set up. See [KB005](../kb005-ursa-major-service-tiers/) for the tiers.
 
 ## The steps
 

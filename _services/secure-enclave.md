@@ -3,7 +3,7 @@ title: "Secure research enclave"
 parent: Security
 parent_url: /security/
 kicker: "Sensitive data <span class='sep'>|</span> Operated with ITS and the Information Security Office"
-description: "A controlled cloud environment for research with contractual or regulatory data protection requirements, available after review, an approved data security plan and training."
+description: "A controlled cloud environment for research under NIST SP 800-171 or CMMC Level 2 requirements, including controlled-access data such as NIH dbGaP, available after review, an approved data security plan and training."
 status: By review
 tags: [Regulated data, Data security plan, Recharge]
 data_levels: Regulated, by review
@@ -13,11 +13,13 @@ governed_by: "The project's data security plan and MOU"
 redirect_from:
   - /pages/research_security.html
 fit:
-  - Projects whose contract, grant or data use agreement requires controls such as NIST SP 800-171
+  - Projects whose contract, grant or data use agreement requires NIST SP 800-171 or CMMC Level 2 controls
+  - Controlled-access data such as NIH dbGaP
   - Data that cannot be held on the shared cluster or ordinary cloud projects
   - Teams able to follow strict access and data transfer rules
 not_fit:
   - US classified data (not supported)
+  - HIPAA clinical data and applications (see KB006: clinical and HIPAA hosting)
   - Projects without an approved data security plan
   - Quick, unplanned analysis; onboarding takes time
 glance:
@@ -33,7 +35,7 @@ cta:
 
 ## What it is
 
-The secure research enclave is a cloud-based environment for research data with contractual or regulatory protection requirements. It is designed to support projects that must meet controls such as NIST SP 800-171. It is provided by Research Computing with ITS and the campus Information Security Office (ISO). Whether it is suitable for a particular project is decided in review, against that project's requirements.
+The secure research enclave is a NIST SP 800-171 environment in Google Cloud. It is designed to support projects whose agreements require NIST SP 800-171 or CMMC Level 2 controls, including controlled-access data such as NIH dbGaP. It is provided by Research Computing with ITS and the campus Information Security Office (ISO). Whether it is suitable for a particular project is decided in review, against that project's requirements.
 
 ## How onboarding works
 

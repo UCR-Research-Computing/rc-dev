@@ -6,7 +6,7 @@ redirect_from:
   - /Knowledge_Base/ollama-how-to.html
 ---
 
-**Cost note:** cloud GPUs (such as the T4 used below) are not covered by the Ursa Major campus pool. Following this guide on Google Cloud creates recharged usage billed to your lab's funding source. To run models on GPUs at lower cost to the lab, consider the [HPCC](../../services/hpcc/).
+**Cost note:** cloud GPU workstations (such as the T4 used below) are a recharged (Tier 2) service. Following this guide on Google Cloud creates recharged usage billed to your lab's funding source. To run models on GPUs at lower cost to the lab, consider the [HPCC](../../services/hpcc/).
 
 This comprehensive guide outlines the process for setting up a GPU-enabled workstation on UCR Research Computing's Ursa Major (GCP Console) to run your own copy of an offline AI Large Language Model (LLM), such as Llama 2 or Gemma, with full data privacy.
 

@@ -1,9 +1,9 @@
 ---
 title: "Ursa Major (Google Cloud)"
 kicker: "Cloud <span class='sep'>|</span> UCR's Google Cloud research program"
-description: "Google Cloud projects for UCR research: AI services, cloud-native workloads and long-term archive, under a tiered allocation framework."
+description: "UCR's Google Cloud research program: AI model access, specialized hardware not available on campus, and archive storage, plus recharged cloud projects for everything else."
 status: By review
-tags: [Cloud, AI services, Archive, Tiered]
+tags: [Cloud, AI access, Specialized hardware, Archive]
 data_levels: P1-P2 by default
 owner: "Research Computing"
 reviewed: 2026-10-04
@@ -13,19 +13,20 @@ redirect_from:
   - /pages/ursa_major.html
   - /pages/ursa-major-ask.html
 fit:
-  - AI and machine-learning services on Google Cloud, such as Vertex AI and the Gemini API
-  - Cloud-native work such as containers, managed databases and analytics
+  - Generative AI model access for research and programming
+  - Work that needs hardware the HPCC does not have, such as very large memory, Arm, high clock speed or TPUs
   - Long-term archive of data you must keep but rarely read
-  - Workloads that need cloud tools not available on campus
+  - Cloud-native work (VMs, containers, databases, analytics), as a recharged project
 not_fit:
-  - Large batch or GPU computing where the HPCC fits (usually lower cost to the lab)
+  - Batch or GPU computing that runs well on the HPCC
   - Regulated data outside an approved environment (see the secure enclave)
   - Individual accounts not tied to a lab or PI project
   - Projects expecting Research Computing to fund recharged usage
 glance:
   - {k: "Who can use it", v: "UCR PIs and their lab members, in a project anchored to the PI"}
   - {k: "How it is allocated", v: "By request and review, under a tiered framework"}
-  - {k: "Cost", v: "Some baseline services may carry no recharge under current terms; GPU, high-performance and large-scale work is recharged"}
+  - {k: "Tier 1 (campus-supported)", v: "AI model access, specialized hardware and archive storage: no recharge to the lab under current terms, within limits"}
+  - {k: "Everything else", v: "Recharged to a lab funding source under an MOU"}
   - {k: "Data allowed", v: "P1 and P2 by default"}
 cta:
   - {label: "Ask about a project", url: "/help/"}
@@ -34,27 +35,32 @@ cta:
 
 ## What it is
 
-Ursa Major is UCR's research program on Google Cloud, run by Research Computing with ITS. It gives labs Google Cloud projects for work that is a good fit for the cloud: AI and machine-learning services, cloud-native tools, and long-term archive. It complements, rather than replaces, the campus cluster.
+Ursa Major is UCR's research program on Google Cloud, run by Research Computing with ITS. It focuses campus support on what campus systems cannot easily provide: access to AI models for research, hardware the HPCC does not have, and long-term archive. Other cloud work is available as recharged projects. It complements, rather than replaces, the campus cluster.
 
 ## How allocation works
 
 Requests are reviewed against current campus resources, funding and research priorities. Resources fall into tiers:
 
-- **Baseline (pool) tier.** Selected baseline services may be covered by the campus pool, with no recharge to the lab under current terms. Eligibility, the list of covered services, and limits are set out in the [Ursa Major guidelines]({{ '/kb/ursa-major-guidelines/' | relative_url }}) and can change.
-- **Recharge tier.** Cloud GPUs, high-performance machine types, large-scale storage, marketplace models and other specialized resources are billed to a lab funding source through ITS.
-- **Dedicated agreements.** Very large or multi-year projects may need their own contract with the provider, with ITS oversight.
+- **Tier 1, campus-supported.** Three things, with no recharge to the lab under current terms, within limits and subject to eligibility:
+  - **AI model access** for research and programming, through a service Research Computing manages, with a per-lab allowance;
+  - **specialized hardware** not available on the HPCC (for example very large memory, very high node counts, high clock speed or memory bandwidth, fast local storage or DPUs, Arm or recent Intel architectures, and TPUs), through a Research Computing HPC cluster in Google Cloud, within limits set per project;
+  - **archive storage** in Google Cloud archive classes.
+- **Tier 2, recharge.** All other cloud work, including VMs, GKE, Cloud SQL, BigQuery, Standard storage, GPUs and marketplace models, billed to a lab funding source through ITS.
+- **Tier 3, dedicated agreements.** Very large or multi-year projects may need their own contract with the provider, with ITS oversight.
 
 [KB005: Ursa Major service tiers]({{ '/kb/kb005-ursa-major-service-tiers/' | relative_url }}) describes the tiers in more detail.
 
 {% include fact.html id="cloud_admin_setup" bare=true %} and {% include fact.html id="cloud_admin_annual" bare=true %} administrative fees can apply to recharged cloud accounts. These are set out in the MOU for the account.
 
-## Costs and the campus pool
+## Costs and campus support
 
-Funding for any no-recharge tier comes from campus sources and depends on continued funding. Research Computing does not commit to how long any service will remain without recharge. Lab-funded (recharged) use is billed at the rates in your MOU.
+Tier 1 is funded from campus sources and depends on continued funding. Research Computing does not commit to how long any service will remain without recharge. Lab-funded (recharged) use is billed at the rates in your MOU.
+
+Projects set up before October 2026 may still be arranged under the earlier tiers. See the [archived description]({{ '/kb/ursa-major-service-tiers-pre-2026-10/' | relative_url }}).
 
 ## How to get started
 
-[Contact Research Computing]({{ '/help/' | relative_url }}) with a short description of the project, the data involved (and its protection level), and the funding source if recharged work is likely. Student requests are approved by the student's PI and placed in the PI's project.
+[Contact Research Computing]({{ '/help/' | relative_url }}) with a short description of the project, the data involved (and its protection level), which Tier 1 area you need (if any), and a funding source if recharged work is likely. Student requests are approved by the student's PI and placed in the PI's project.
 
 ## Related
 

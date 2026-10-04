@@ -22,11 +22,11 @@ Ursa Major resources are allocated to projects anchored to a PI's lab, not to in
 
 Resources fall into tiers, described in [KB005: Ursa Major service tiers](../kb005-ursa-major-service-tiers/):
 
-- **Tier 1, baseline (campus pool):** selected baseline services, with no recharge to the lab under current terms, within limits and subject to eligibility. Cloud GPUs are not included.
-- **Tier 2, recharge:** GPUs, high-performance machine types, large-scale storage, the secure enclave and other specialized resources, billed to a lab funding source under an MOU. For GPU work at lower cost to the lab, consider the [HPCC](../../services/hpcc/).
+- **Tier 1, campus-supported:** AI model access for research (with a per-lab allowance), specialized hardware not available on the HPCC (within limits set per project), and archive storage. No recharge to the lab under current terms, within limits and subject to eligibility.
+- **Tier 2, recharge:** all other cloud work, including VMs, GKE, Cloud SQL, BigQuery, Standard storage, GPUs and marketplace models, billed to a lab funding source under an MOU. For GPU work at lower cost to the lab, consider the [HPCC](../../services/hpcc/). The [secure research enclave](../../services/secure-enclave/) is also recharged.
 - **Tier 3, dedicated agreement:** an environment funded by the researcher under a dedicated agreement with the provider, managed with ITS.
 
-Campus pool coverage depends on continued campus funding. Research Computing may change the services covered, the limits, or the tiers.
+Tier 1 depends on continued campus funding. Research Computing may change the services covered, the allowances and limits, or the tiers. Projects set up before October 2026 may still be arranged under the [earlier tiers](../ursa-major-service-tiers-pre-2026-10/).
 
 ### How to request
 
@@ -34,7 +34,7 @@ Campus pool coverage depends on continued campus funding. Research Computing may
 
 ### Monitoring usage
 
-Project members can see their project's usage in the Google Cloud console (for example the Cloud Monitoring dashboards and, for recharged projects, billing reports). Research Computing also monitors usage across projects to manage campus pool limits.
+Project members can see their project's usage in the Google Cloud console (for example the Cloud Monitoring dashboards and, for recharged projects, billing reports). Research Computing also monitors usage across projects to manage Tier 1 allowances and limits.
 
 ### Limits and restrictions
 
@@ -81,4 +81,4 @@ Research Computing offers guidance and training on using the cloud securely, inc
 
 ## Stewardship
 
-Research Computing manages Ursa Major: monitoring the service, responding to issues, maintaining the shared configuration, communicating planned changes, and managing campus pool limits. Researchers are responsible for their own data, including backups and disaster recovery where their project needs them. Research Computing can advise on these.
+Research Computing manages Ursa Major: monitoring the service, responding to issues, maintaining the shared configuration, communicating planned changes, and managing Tier 1 allowances and limits. Researchers are responsible for their own data, including backups and disaster recovery where their project needs them. Research Computing can advise on these.

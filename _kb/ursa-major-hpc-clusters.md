@@ -8,7 +8,11 @@ redirect_from:
   - /Knowledge_Base/Ursa_Major_HPC_Clusters.html
 ---
 
-**Cost note:** Ursa Major HPC clusters use high-performance machine types and often cloud GPUs. They are therefore recharged to a lab funding source (COA) under an MOU. For most batch and GPU work, the campus [HPCC cluster](../../services/hpcc/) is the first place to look and usually costs the lab less.
+**Two different things.** This guide is about a lab building **its own** Slurm cluster in its Ursa Major project. That is recharged to a lab funding source (COA) under an MOU.
+
+Separately, Research Computing runs a shared HPC cluster in Google Cloud for **Tier 1 specialized hardware**: very large memory, very high node counts, high clock speed or memory bandwidth, fast local storage or DPUs, other architectures such as Arm, and TPUs. That is campus-supported under current terms, within limits set per project. See [KB005](../kb005-ursa-major-service-tiers/). [Ask us](../../help/) which fits.
+
+For most batch and GPU work, the campus [HPCC cluster](../../services/hpcc/) is the first place to look and usually costs the lab less.
 
 ## What it is
 

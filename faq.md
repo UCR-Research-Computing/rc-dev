@@ -20,8 +20,8 @@ redirect_from:
 **How much does the HPCC cost?**
 The HPCC charges an annual lab registration: {% include fact.html id="hpcc_lab_fee" %}. Use of the cluster is shared and subject to the HPCC's quotas and queue policies ({% include fact.html id="hpcc_cpu_quota" bare=true %}). See [HPCC cluster]({{ '/services/hpcc/' | relative_url }}).
 
-**Are Google Cloud GPUs covered by Ursa Major?**
-No. Cloud GPUs, high-performance machine types and large-scale storage are recharged to a lab funding source. See [Ursa Major]({{ '/services/ursa-major/' | relative_url }}).
+**What does Ursa Major cover without a recharge?**
+Under current terms, three things, within limits: AI model access for research (with a per-lab allowance), specialized hardware the HPCC does not have (such as very large memory, Arm or TPUs), and archive storage. Other cloud work, including VMs, databases, analytics and GPUs, is recharged to a lab funding source. See [KB005: Ursa Major service tiers]({{ '/kb/kb005-ursa-major-service-tiers/' | relative_url }}).
 
 **What does archive storage cost?**
 Under current Ursa Major terms, archive storage may be available without recharge, within limits and subject to eligibility. That depends on continued funding. See [Cloud archive]({{ '/services/cloud-archive/' | relative_url }}).
@@ -40,10 +40,10 @@ Drive is built for documents and collaboration, and has quotas set by ITS ([its.
 ITS maintains the list of campus AI tools and the guidance for each at [AI at UCR](https://its.ucr.edu/ai). Check it, and your data's [protection level]({{ '/security/' | relative_url }}#data-protection-levels), before using any AI tool with research data.
 
 **Can I run open-source language models?**
-Yes. The HPCC's GPUs are usually the lower-cost place to do it. Cloud GPUs in Ursa Major are recharged. See [Running local LLMs with Ollama]({{ '/kb/ollama-how-to/' | relative_url }}).
+Yes. The HPCC's GPUs are usually the lower-cost place to run them yourself. For calling models from code, ask about Ursa Major Tier 1 AI model access. Cloud GPU workstations in Ursa Major are recharged. See [Running local LLMs with Ollama]({{ '/kb/ollama-how-to/' | relative_url }}).
 
 **How do I request an Ursa Major project?**
-[Contact us]({{ '/help/' | relative_url }}) with a short description of the project. See [KB005: Ursa Major service tiers]({{ '/kb/kb005-ursa-major-service-tiers/' | relative_url }}).
+[Contact us]({{ '/help/' | relative_url }}) with a short description of the project. See [KB021: Requesting an Ursa Major project]({{ '/kb/kb021-ursa-major-project-request/' | relative_url }}).
 
 ## Security
 

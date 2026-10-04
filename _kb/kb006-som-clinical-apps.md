@@ -27,7 +27,7 @@ Research Computing can provide Google Cloud infrastructure for SOM projects, but
 If SOM IT decides that Google Cloud is the preferred host, Research Computing can:
 
 1. Create a project in the Ursa Major organization.
-2. Link it to a grant funding source (COA). Clinical and HIPAA hosting is recharged; the campus pool does not cover it.
+2. Link it to a grant funding source (COA). Clinical and HIPAA hosting is recharged; Tier 1 does not cover it.
 3. Provide standard campus networking.
 
 ### What the research team is responsible for
