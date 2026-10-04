@@ -1,0 +1,48 @@
+title: UCR Research Computing
+description: "Computing, storage and expert help for UC Riverside researchers."
+url: https://ucr-research-computing.github.io
+baseurl: /rc-dev
+lang: en_US
+timezone: America/Los_Angeles
+preview: true          # dev site: adds noindex and a small preview pill; set false at the flip
+
+markdown: kramdown
+kramdown:
+  input: GFM
+  smart_quotes: ["apos", "apos", "quot", "quot"]
+  hard_wrap: false
+  syntax_highlighter: rouge
+
+plugins:
+  - jekyll-seo-tag
+  - jekyll-sitemap
+  - jekyll-redirect-from
+
+collections:
+  services:
+    output: true
+    permalink: /:collection/:name/
+  kb:
+    output: true
+    permalink: /kb/:name/
+  redirects:
+    output: true
+
+defaults:
+  - scope: {path: "", type: services}
+    values: {layout: service}
+  - scope: {path: "", type: kb}
+    values: {layout: kb}
+  - scope: {path: "", type: redirects}
+    values: {layout: null, sitemap: false}
+  - scope: {path: ""}
+    values: {layout: page}
+
+exclude:
+  - .github
+  - README.md
+  - Gemfile
+  - Gemfile.lock
+  - vendor
+  - tools
+  - docs
