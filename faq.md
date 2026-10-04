@@ -21,7 +21,7 @@ redirect_from:
 The HPCC charges an annual lab registration: {% include fact.html id="hpcc_lab_fee" %}. Use of the cluster is shared and subject to the HPCC's quotas and queue policies ({% include fact.html id="hpcc_cpu_quota" bare=true %}). See [HPCC cluster]({{ '/services/hpcc/' | relative_url }}).
 
 **What does Ursa Major cover without a recharge?**
-Under current terms, three things, within limits: AI model access for research (with a per-lab allowance), specialized hardware the HPCC does not have (such as very large memory, Arm or TPUs), and archive storage. Other cloud work, including VMs, databases, analytics and GPUs, is recharged to a lab funding source. See [KB005: Ursa Major service tiers]({{ '/kb/kb005-ursa-major-service-tiers/' | relative_url }}).
+Under current terms, three things, within limits: AI model access for research (with a per-lab allowance), exotic hardware the HPCC does not have (such as TPUs or Arm), by consultation, and archive storage. Other cloud work, including VMs, databases, analytics and GPUs, is recharged to a lab funding source. See [KB005: Ursa Major service tiers]({{ '/kb/kb005-ursa-major-service-tiers/' | relative_url }}).
 
 **What does archive storage cost?**
 Under current Ursa Major terms, archive storage may be available without recharge, within limits and subject to eligibility. That depends on continued funding. See [Cloud archive]({{ '/services/cloud-archive/' | relative_url }}).

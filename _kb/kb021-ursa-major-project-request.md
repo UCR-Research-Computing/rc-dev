@@ -11,7 +11,7 @@ redirect_from:
   - /Knowledge_Base/KB001_AI_Cloud_Access_Request.html
 ---
 
-Use this guide if you want AI model access for research, specialized hardware not available on campus, archive storage, or a Google Cloud project.
+Use this guide if you want AI model access for research, exotic hardware not available on campus, archive storage, or a Google Cloud project.
 
 ## The basic rule: projects belong to a lab
 
@@ -28,7 +28,7 @@ Ursa Major does not create individual accounts. Every cloud project is anchored 
 ## What to include in your request
 
 - Your name, NetID and department, and your PI's name.
-- What you want to do (for example, use AI models in an analysis pipeline, run a job that needs very large memory, or archive raw data).
+- What you want to do (for example, use AI models in an analysis pipeline, run work that needs TPUs, or archive raw data).
 - The data involved, and its [protection level](../../security/#data-protection-levels) if you know it.
 - If GPUs or other recharged resources are likely, a funding source (COA).
 

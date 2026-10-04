@@ -14,9 +14,9 @@ A one-page summary of the main compute options and what each is best for. The fu
 
 ## Ursa Major (Google Cloud)
 
-**Best for:** AI model access for research, specialized hardware not available on campus, and archive storage.
+**Best for:** AI model access for research, exotic hardware not available on campus, and archive storage.
 
-- Tier 1 (no recharge to the lab under current terms, within limits): AI model access with a per-lab allowance, specialized hardware through a Research Computing HPC cluster in Google Cloud, and archive storage.
+- Tier 1 (no recharge to the lab under current terms, within limits): AI model access with a per-lab allowance, exotic hardware (such as TPUs or Arm) through a Research Computing HPC cluster in Google Cloud, by consultation, and archive storage.
 - Everything else (VMs, databases, analytics, Standard storage, GPUs) is recharged to a lab funding source.
 - Details: [Ursa Major](../../services/ursa-major/) and [KB005: Ursa Major service tiers](../kb005-ursa-major-service-tiers/).
 
@@ -52,6 +52,6 @@ A one-page summary of the main compute options and what each is best for. The fu
 - Allocations are awarded by application. No recharge from UCR. Small Explore projects are the usual starting point.
 - Step-by-step guide: [KB009: Using NSF ACCESS and Jetstream2](../kb009-using-nsf-access/).
 
-If your work needs hardware none of these offer, such as very large memory, Arm or TPUs, ask about Ursa Major Tier 1 specialized hardware.
+If your work needs exotic hardware none of these offer, such as TPUs or Arm, ask us about Ursa Major Tier 1.
 
 This order is a suggestion. The right choice depends on your work and data. [Ask us](../../help/).

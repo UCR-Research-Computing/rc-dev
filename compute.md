@@ -24,7 +24,7 @@ Most research computing at UCR runs on the **HPCC cluster**. Cloud and national 
 | Run batch simulations, pipelines or MPI jobs | [HPCC cluster]({{ '/services/hpcc/' | relative_url }}) | [NSF ACCESS]({{ '/services/nsf-access/' | relative_url }}) for larger runs |
 | Train or run models on GPUs | [HPCC cluster]({{ '/services/hpcc/' | relative_url }}) | [NAIRR Pilot]({{ '/services/nairr/' | relative_url }}), [NSF ACCESS]({{ '/services/nsf-access/' | relative_url }}), [Nautilus]({{ '/services/nautilus/' | relative_url }}) |
 | Use generative AI models in your research | [Ursa Major]({{ '/services/ursa-major/' | relative_url }}) (Tier 1 AI access) | [Cloud and AI]({{ '/compute/cloud-and-ai/' | relative_url }}) |
-| Use hardware the HPCC does not have (very large memory, Arm, TPUs) | [Ursa Major]({{ '/services/ursa-major/' | relative_url }}) (Tier 1 specialized hardware) | [NSF ACCESS]({{ '/services/nsf-access/' | relative_url }}) |
+| Use exotic hardware the HPCC does not have (such as TPUs or Arm) | [Ursa Major]({{ '/services/ursa-major/' | relative_url }}) (Tier 1 exotic hardware, by consultation) | [NSF ACCESS]({{ '/services/nsf-access/' | relative_url }}) |
 | Run thousands of small independent jobs | [HPCC cluster]({{ '/services/hpcc/' | relative_url }}) | [OSG / OSPool]({{ '/services/osg/' | relative_url }}) |
 | Run containers or JupyterHub at scale | [NRP Nautilus]({{ '/services/nautilus/' | relative_url }}) | [Ursa Major]({{ '/services/ursa-major/' | relative_url }}) |
 | Have your own cloud account on a grant | [Cloud accounts]({{ '/services/cloud-accounts/' | relative_url }}) | [Ursa Major]({{ '/services/ursa-major/' | relative_url }}) |

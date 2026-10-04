@@ -22,7 +22,7 @@ Ursa Major resources are allocated to projects anchored to a PI's lab, not to in
 
 Resources fall into tiers, described in [KB005: Ursa Major service tiers](../kb005-ursa-major-service-tiers/):
 
-- **Tier 1, campus-supported:** AI model access for research (with a per-lab allowance), specialized hardware not available on the HPCC (within limits set per project), and archive storage. No recharge to the lab under current terms, within limits and subject to eligibility.
+- **Tier 1, campus-supported:** AI model access for research (with a per-lab allowance), exotic hardware not available on the HPCC, such as TPUs or Arm (by consultation, within limits set per project), and archive storage. No recharge to the lab under current terms, within limits and subject to eligibility.
 - **Tier 2, recharge:** all other cloud work, including VMs, GKE, Cloud SQL, BigQuery, Standard storage, GPUs and marketplace models, billed to a lab funding source under an MOU. For GPU work at lower cost to the lab, consider the [HPCC](../../services/hpcc/). The [secure research enclave](../../services/secure-enclave/) is also recharged.
 - **Tier 3, dedicated agreement:** an environment funded by the researcher under a dedicated agreement with the provider, managed with ITS.
 
