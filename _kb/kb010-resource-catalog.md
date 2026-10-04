@@ -14,15 +14,15 @@ A one-page summary of the main compute options and what each is best for. The fu
 
 ## Ursa Major (Google Cloud)
 
-**Best for:** AI services (Gemini API, Vertex AI), cloud-native tools, and archive.
+**Best for:** AI model access for research, specialized hardware not available on campus, and archive storage.
 
-- Baseline services may be covered by the campus pool under current terms, within limits. Cloud GPUs are not covered.
-- Recharged services (custom VMs, GPUs, high-performance storage) are billed to a lab funding source.
+- Tier 1 (no recharge to the lab under current terms, within limits): AI model access with a per-lab allowance, specialized hardware through a Research Computing HPC cluster in Google Cloud, and archive storage.
+- Everything else (VMs, databases, analytics, Standard storage, GPUs) is recharged to a lab funding source.
 - Details: [Ursa Major](../../services/ursa-major/) and [KB005: Ursa Major service tiers](../kb005-ursa-major-service-tiers/).
 
 ## Where to take GPU and advanced compute work
 
-### 1. UCR HPCC
+### 1. UCR HPCC (first choice for most work)
 
 **Best for:** batch jobs, simulation, GPU training, MPI.
 
@@ -51,5 +51,7 @@ A one-page summary of the main compute options and what each is best for. The fu
 
 - Allocations are awarded by application. No recharge from UCR. Small Explore projects are the usual starting point.
 - Step-by-step guide: [KB009: Using NSF ACCESS and Jetstream2](../kb009-using-nsf-access/).
+
+If your work needs hardware none of these offer, such as very large memory, Arm or TPUs, ask about Ursa Major Tier 1 specialized hardware.
 
 This order is a suggestion. The right choice depends on your work and data. [Ask us](../../help/).

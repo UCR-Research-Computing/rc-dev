@@ -11,7 +11,7 @@ redirect_from:
   - /Knowledge_Base/KB001_AI_Cloud_Access_Request.html
 ---
 
-Use this guide if you want Gemini API access, a Google Cloud project, or access to Ursa Major.
+Use this guide if you want AI model access for research, specialized hardware not available on campus, archive storage, or a Google Cloud project.
 
 ## The basic rule: projects belong to a lab
 
@@ -28,7 +28,7 @@ Ursa Major does not create individual accounts. Every cloud project is anchored 
 ## What to include in your request
 
 - Your name, NetID and department, and your PI's name.
-- What you want to do (for example, use the Gemini API in an analysis pipeline).
+- What you want to do (for example, use AI models in an analysis pipeline, run a job that needs very large memory, or archive raw data).
 - The data involved, and its [protection level](../../security/#data-protection-levels) if you know it.
 - If GPUs or other recharged resources are likely, a funding source (COA).
 
@@ -36,4 +36,4 @@ Send it to research-computing@ucr.edu or through the [UCR Support Portal](https:
 
 ## After approval
 
-API keys are created inside the PI's project and are billed under the PI's account. Treat an API key like a password. See [KB002: When your project is ready](../kb002-project-activation-welcome/).
+AI access and any API keys are tied to the PI's lab. Tier 1 AI use counts against the lab's allowance; use in a recharged project is billed to that project. Treat an API key like a password. See [KB002: When your project is ready](../kb002-project-activation-welcome/).

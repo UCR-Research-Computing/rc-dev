@@ -19,12 +19,12 @@ Sign in at the [Google Cloud console](https://console.cloud.google.com/) with yo
 - **Dashboard:** an overview of the project.
 - **IAM and admin:** who has access. The PI approves changes to project membership.
 
-## 2. Set up the Gemini API (if you need it)
+## 2. AI model access
 
-To call Gemini models from code, create an API key under **APIs and services > Credentials** in your project.
+Tier 1 AI model access is arranged by Research Computing, with a per-lab allowance, and your welcome email explains how to connect. If you create API keys for Google Cloud AI services directly in a recharged project, that usage is billed to the project.
 
-- Treat the key like a password. Do not put it in code you share or commit to a repository.
-- Usage is tied to your PI's project and its tier. Models and services outside the campus pool are recharged. See [KB005: Ursa Major service tiers](../kb005-ursa-major-service-tiers/).
+- Treat any key like a password. Do not put it in code you share or commit to a repository.
+- See [KB005: Ursa Major service tiers](../kb005-ursa-major-service-tiers/) for what is campus-supported and what is recharged.
 
 ## 3. Watch your spending
 

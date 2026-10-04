@@ -3,7 +3,6 @@ title: "Ursa Major service tiers"
 kb_id: KB005
 topic: Cloud
 audience: "PIs, researchers and lab managers"
-updated: 2026-02-17
 reviewed: 2026-10-04
 owner: Research Computing
 redirect_from:
@@ -12,50 +11,61 @@ redirect_from:
 
 Ursa Major, UCR's Google Cloud research program, groups cloud resources into tiers. The tier decides how a resource is funded. This article summarizes the tiers. The [Ursa Major guidelines](../ursa-major-guidelines/) and, for recharged projects, your MOU, are the governing terms.
 
-## Tier 1: Baseline (the campus pool)
+Projects set up before October 2026 may still be arranged under the earlier tiers, which covered a list of general cloud services. That arrangement is described in an [archived reference article](../ursa-major-service-tiers-pre-2026-10/).
 
-**Purpose:** give UCR labs access to cloud tools, chiefly AI services and archive, that are not available on campus.
+## Tier 1: Campus-supported (no recharge to the lab under current terms)
 
-**Funding:** covered by the campus pool under current terms, with no recharge to the lab, within limits and subject to eligibility. Pool coverage depends on continued campus funding and can change.
+**Purpose:** support research that campus systems cannot easily serve, in three areas. Tier 1 resources carry no recharge to the lab under current terms, within limits and subject to eligibility. They depend on continued campus funding and can change.
 
-Services that have been covered by the pool include:
+### 1. AI model access for research
 
-| Resource | Typical use |
-| --- | --- |
-| Standard general-purpose VMs | Light compute, small services |
-| GKE | Container orchestration |
-| Cloud Storage (Coldline class) | Long-term archive and backups |
-| Cloud Storage (Standard class) | Small working datasets |
-| Persistent disk (balanced) | VM boot and data disks |
-| Cloud SQL | Managed databases |
-| BigQuery | Analytics |
-| Gemini API | Google's AI models |
-| Vertex AI Search | Search and agent applications, within standard limits |
+Access to generative AI models for research and programming, through a service Research Computing manages, with a per-lab allowance. The allowance and the models offered are set when access is arranged and may change. Use beyond the allowance, and models or services outside it, are recharged.
 
-The current list, and the limits that apply, are confirmed when your project is set up. A service on this list may still be recharged if a project's usage goes beyond pool limits.
+### 2. Specialized hardware not available on campus
 
-### Not covered by the pool
+Hardware the HPCC cluster does not offer and that is hard to find elsewhere, provided through a Research Computing HPC cluster in Google Cloud, within limits set per project. Examples:
 
-These are recharged to a lab funding source:
+- very large memory per node;
+- very high node counts for a single job;
+- very high single-core clock speeds or memory bandwidth;
+- fast local NVMe storage or data-processing units (DPUs) for heavy data movement;
+- other processor architectures, such as Arm or recent Intel Xeon generations;
+- Google Cloud TPUs.
 
-- Cloud GPUs (all types).
-- High-performance machine families (for example `n1`, `c2`, `m1`, `c3`).
-- Marketplace and third-party models (for example Claude, Llama, Mistral) through Vertex AI.
-- Bare Metal Solution.
+Work that runs well on the HPCC belongs on the HPCC. Requests are reviewed to confirm the hardware is needed and to set the project's limits.
+
+### 3. Archive storage
+
+Google Cloud Storage archive classes (such as Coldline) for data you need to keep but rarely read. See [Cloud archive](../../services/cloud-archive/) and [KB012: Using Ursa Major archive storage](../kb012-migrating-data-to-archive/). Reading data back can carry retrieval charges.
 
 ## Tier 2: Recharge
 
-**Purpose:** cloud-native work that goes beyond pool limits or needs specialized resources.
+**Purpose:** all other cloud work.
 
 **Funding:** billed to a lab funding source (COA) through ITS, at the rates in the University of California agreement with Google, under an MOU.
 
-Common Tier 2 resources: Google Filestore (managed NFS), cloud GPUs, high-performance VMs, marketplace models, and large-scale instructional use. See [KB007: Ursa Major recharge workflow](../kb007-tier2-recharge-workflow/).
+Tier 2 includes general-purpose cloud services, for example:
+
+- virtual machines and research workstations;
+- GKE (Kubernetes) clusters;
+- Cloud SQL and other managed databases;
+- BigQuery and other analytics;
+- Standard-class Cloud Storage, persistent disks and Google Filestore;
+- cloud GPUs and high-performance machine types used outside Tier 1;
+- marketplace and third-party models through Vertex AI;
+- large-scale instructional use.
+
+See [KB007: Ursa Major recharge workflow](../kb007-tier2-recharge-workflow/).
 
 ## Tier 3: Dedicated agreement
 
 **Purpose:** large or multi-year projects that need their own contract terms.
 
 **Funding:** a direct agreement between the lab and Google, with ITS administrative oversight.
+
+## Regulated data: the secure research enclave
+
+The [secure research enclave](../../services/secure-enclave/) is a separate, recharged environment for work under NIST SP 800-171 or CMMC Level 2 requirements, including controlled-access data such as NIH dbGaP. It is available after review, an approved data security plan and training.
 
 ## When the cloud is not the best fit
 

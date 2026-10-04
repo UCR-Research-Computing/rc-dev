@@ -22,9 +22,9 @@ Projects with contractual or regulatory obligations to protect sensitive data, s
 
 - Department of Defense funded projects with enhanced security requirements.
 - Research involving data subject to NIST SP 800-171 Rev 2 or CMMC Level 2 requirements.
-- Other sensitive data that may need a managed, high-security environment. Consult with us first.
+- Controlled-access data, such as NIH dbGaP, whose terms require NIST SP 800-171 controls.
 
-Other options may suit P3 or P4 data without federal requirements. See [UCR data security plans](../ucr-data-security-plans/).
+The enclave is for NIST SP 800-171 and CMMC Level 2 work. Other options may suit P3 or P4 data without these requirements. See [UCR data security plans](../ucr-data-security-plans/).
 
 ## Key protections
 

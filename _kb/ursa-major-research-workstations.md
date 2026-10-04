@@ -18,12 +18,13 @@ An Ursa Major research workstation is a virtual machine (VM) in your lab's Googl
 - **Machine size:** CPU count, CPU type and memory, chosen when you create the VM and changeable later.
 - **Operating system:** a range of Linux distributions and Windows.
 - **Persistent disks:** data on persistent disks stays when the VM is stopped (disk storage is charged while it exists).
-- **GPUs:** available on recharged projects only.
+- **GPUs:** available on recharged projects.
 
 ## Costs
 
-- Standard general-purpose VMs may be covered by the Ursa Major campus pool under current terms, within limits. See [KB005: Ursa Major service tiers](../kb005-ursa-major-service-tiers/).
-- GPUs and high-performance machine types are recharged to a lab funding source. For GPU work at lower cost to the lab, consider the [HPCC](../../services/hpcc/).
+- Research workstations are a Tier 2 service: they are recharged to a lab funding source under an MOU. See [KB005: Ursa Major service tiers](../kb005-ursa-major-service-tiers/).
+- If you need hardware the HPCC does not have (for example very large memory, Arm or TPUs), ask about Tier 1 specialized hardware instead, which runs through a Research Computing cluster rather than a workstation.
+- For GPU work at lower cost to the lab, consider the [HPCC](../../services/hpcc/).
 - Stop VMs you are not using. A running VM uses resources whether or not you are working on it.
 
 ## When a workstation is a good fit

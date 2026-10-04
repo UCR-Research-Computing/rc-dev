@@ -15,13 +15,13 @@ Ursa Major projects can store data in Google Cloud Storage buckets. How storage 
 
 ## Storage by tier
 
-**Baseline (campus pool): archive and small datasets.** Under current Ursa Major terms, Coldline archive storage, and small amounts of Standard storage for active work, may be available without recharge to the lab, within limits and subject to eligibility. This depends on continued campus funding. See [Cloud archive](../../services/cloud-archive/).
+**Tier 1: archive storage.** Under current Ursa Major terms, archive storage classes (such as Coldline) may be available without recharge to the lab, within limits and subject to eligibility. This depends on continued campus funding. See [Cloud archive](../../services/cloud-archive/).
 
-**Recharge: high performance and large scale.** Large-scale active storage, high-performance persistent disks and managed file systems (such as Google Filestore) are recharged to a lab funding source under an MOU. For large active datasets, also consider campus options such as [HPCC storage](../../services/hpcc-storage/) and [CephRDS](../../services/cephrds/).
+**Tier 2: everything else.** Standard-class storage for active work, persistent disks and managed file systems (such as Google Filestore) are recharged to a lab funding source under an MOU. For large active datasets, also consider campus options such as [HPCC storage](../../services/hpcc-storage/) and [CephRDS](../../services/cephrds/).
 
 ## Analytics
 
-Data in Cloud Storage can be analyzed with services such as BigQuery. Whether that usage is covered by the campus pool or recharged depends on the service and scale. See [KB005](../kb005-ursa-major-service-tiers/).
+Data in Cloud Storage can be analyzed with services such as BigQuery. Analytics services such as BigQuery are recharged (Tier 2). See [KB005](../kb005-ursa-major-service-tiers/).
 
 ## Sharing and security
 

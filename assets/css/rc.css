@@ -339,3 +339,7 @@ a.rc:hover { transform: translateY(-3px); box-shadow: 0 12px 26px rgba(0,40,122,
 }
 body { display: flex; flex-direction: column; min-height: 100vh; }
 main { flex: 1 0 auto; }
+
+/* archived reference articles */
+.callout.archived { background: #f3f4f7; border-left-color: #8a94a6; }
+.archive-link { margin-top: 26px; font-size: 14px; color: var(--muted); }

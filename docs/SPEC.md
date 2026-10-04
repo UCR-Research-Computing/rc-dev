@@ -73,7 +73,8 @@ Researchers read closely. Anything that looks like a promise can be held against
 - Describe the process, not the outcome ("requests are reviewed against current resources"), not "you will get".
 - Every service page has "A good fit / Not a fit" boxes and says which terms govern it.
 - Status labels: Available, Pilot, By review, By application, External (defined on `/terms/`).
-- Campus-pool services always carry "depends on continued campus funding". No archive duration or retention commitment is stated anywhere (Chuck: unknown while ITS funding continues).
+- Ursa Major Tier 1 (since 2026-10-04, decided by Chuck and Mike; Mike presents it to the Research Advisory Board) is exactly three things: (1) AI model access for research and programming "through a service Research Computing manages, with a per-lab allowance" (the AI gateway is not public yet, so never name it, and do not state an allowance amount); (2) specialized hardware the HPCC lacks (very large memory, very high node counts, high clock speed or memory bandwidth, NVMe or DPU data movers, Arm, recent Intel, TPUs) through RC's HPC cluster in Google Cloud, "within limits set per project" (do not name bifrost publicly); (3) archive storage. Everything else (VMs, GKE, Cloud SQL, BigQuery, Standard storage, GPUs, marketplace models) is Tier 2 recharge. The enclave is a NIST SP 800-171 environment (CMMC Level 2 and controlled-access data such as dbGaP); HIPAA goes to KB006.
+- Tier 1 always carries "depends on continued campus funding". No archive duration or retention commitment is stated anywhere (Chuck: unknown while ITS funding continues).
 - AI tools: no contract or data-handling wording of our own. Point to ITS at https://its.ucr.edu/ai, plus RAISE (https://raise.ucr.edu/) for AI research.
 - No staff names. Use team names and research-computing@ucr.edu. No internal codenames (Polaris, PSSA), project IDs, billing IDs or CRM names.
 - Plain ASCII only (no smart quotes or dashes). Kramdown is set to straight quotes, and `check_build.py` rejects non-ASCII text.
@@ -116,6 +117,12 @@ Search: `/` or Ctrl+K opens an overlay that searches `search.json` (pages, servi
 - **Factual fixes made in migration:** the HPCC cluster is not "also known as Ursa Major" (removed from BLAST, Nextflow and Globus); the HPCC account process is email to support@hpcc.ucr.edu per the HPCC Access page (the old portal link no longer resolves); Google Drive quotas follow the ITS storage page (the old "500 GB" and "unlimited 1 TB" claims were removed); a broken code block in KB013 was repaired.
 - **Not carried over (Chuck: leave out for now):** showcase essays, demos, infographics and interactive HTML (astrophysics101, genomics101, battery and earth models, hpc-sim and so on), empty stub pages, test pages, the internal ServiceNow ledger, the old blog posts, SDSC Comet guides (system retired), R-JAGS and the ChatGPT MD-input note. Their old URLs redirect to the closest hub.
 
+### 6.1 Archived reference articles
+
+When an arrangement changes but some researchers still work the old way, keep the old article instead of deleting it. Set `archived: true`, `archived_note` (what it describes), `superseded_by` (site path) and `superseded_by_title` in its front matter, and give it a new slug (for example `ursa-major-service-tiers-pre-2026-10`). The layout then shows an "Archived reference" notice and a link to the current article. The page gets `noindex` (even after launch), and it is left out of the KB index, topic counts, related guides and site search. It is listed only on `/kb/archive/`, which is linked once at the foot of the KB index. The current article links to it in one sentence. Old URLs and KB IDs stay on the current article.
+
+Archived so far: the pre-October-2026 Ursa Major tiers (old KB005 content).
+
 ## 7. How to...
 
 **Add or change a figure.** Edit `_data/facts.yml` (value, source, url, as_of, owner). Every page that uses it updates. Chuck reviews (CODEOWNERS).
@@ -157,4 +164,5 @@ The dev site was built so the switch is one reversible change. Recommended path:
 
 ## 10. History
 
+- 2026-10-04 (later): Ursa Major Tier 1 redefined as AI model access, specialized hardware and archive storage; the old baseline list is now Tier 2. KB005 rewritten, old version archived (section 6.1). The change was carried through the Ursa Major service page, guidelines, workstations, storage, research services, HPC clusters, KB002, KB006, KB007, KB010, KB021, Ollama, Costs, FAQ, Compute, Cloud and AI, and the catalog. Enclave wording now reads as a NIST SP 800-171 environment.
 - 2026-10-04: dev site built from the approved plan and mockups. 13 service pages (14 catalog entries; consulting points to Help), 14 hub and topic pages plus the home page, 47 KB articles migrated (17 hand-reviewed), 50 redirect stubs, all 143 prod sitemap URLs covered, claims check clean.

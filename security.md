@@ -36,7 +36,7 @@ A data security plan (DSP) documents the roles, controls and processes that prot
 
 ## Regulated and contract-controlled data
 
-Some grants and agreements require specific controls. Examples are the Department of Defense (NIST SP 800-171, CMMC), controlled-access NIH data, and health data. For these, the campus offers a [secure research enclave]({{ '/services/secure-enclave/' | relative_url }}), after review, an approved DSP and training. Contact us **before** you sign an agreement or submit a proposal that carries such requirements.
+Some grants and agreements require specific controls. Examples are Department of Defense work (NIST SP 800-171, CMMC Level 2), controlled-access NIH data such as dbGaP, and health data. For NIST SP 800-171 and CMMC Level 2 work, the campus offers a [secure research enclave]({{ '/services/secure-enclave/' | relative_url }}), after review, an approved DSP and training. Health data (HIPAA) follows a different path; see [KB006]({{ '/kb/kb006-som-clinical-apps/' | relative_url }}). Contact us **before** you sign an agreement or submit a proposal that carries such requirements.
 
 ## AI tools and research data
 

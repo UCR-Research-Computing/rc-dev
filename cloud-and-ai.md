@@ -30,7 +30,8 @@ The [RAISE Institute](https://raise.ucr.edu/) (Riverside Artificial Intelligence
 | You want to | Where |
 | --- | --- |
 | Train or fine-tune models on GPUs | [HPCC cluster]({{ '/services/hpcc/' | relative_url }}), or national allocations ([NAIRR Pilot]({{ '/services/nairr/' | relative_url }}), [NSF ACCESS]({{ '/services/nsf-access/' | relative_url }})) |
-| Use Google's AI platform (Vertex AI, Gemini API) in a research project | [Ursa Major]({{ '/services/ursa-major/' | relative_url }}) |
+| Call generative AI models from your research code | [Ursa Major]({{ '/services/ursa-major/' | relative_url }}) Tier 1 AI model access, with a per-lab allowance |
+| Use Google's AI platform services (such as Vertex AI) directly | A recharged [Ursa Major]({{ '/services/ursa-major/' | relative_url }}) project |
 | Run open-source language models yourself | [Running local LLMs with Ollama]({{ '/kb/ollama-how-to/' | relative_url }}), on the HPCC or a workstation |
 | Use containers and notebooks with GPUs | [NRP Nautilus]({{ '/services/nautilus/' | relative_url }}) |
 
@@ -38,7 +39,7 @@ The [RAISE Institute](https://raise.ucr.edu/) (Riverside Artificial Intelligence
 
 UCR researchers reach the major cloud providers in two ways:
 
-- **[Ursa Major]({{ '/services/ursa-major/' | relative_url }})**, UCR's Google Cloud research program, for AI services, cloud-native work and archive, under a tiered allocation framework.
+- **[Ursa Major]({{ '/services/ursa-major/' | relative_url }})**, UCR's Google Cloud research program, with campus-supported AI model access, specialized hardware and archive storage, and recharged projects for other cloud work.
 - **[Cloud accounts]({{ '/services/cloud-accounts/' | relative_url }})** under University of California agreements with AWS, Google Cloud and Azure, billed to your funds through ITS.
 
 Cloud can be the right answer when you need managed services, elastic scale for a short time, or tools that do not exist on campus. For long-running batch or GPU work, the HPCC usually costs the lab less. [Ask us]({{ '/help/' | relative_url }}) to compare for your case.

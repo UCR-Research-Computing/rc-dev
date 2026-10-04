@@ -22,13 +22,13 @@
   url: /services/ursa-major/
   icon: fa-solid fa-cloud
   group: Cloud
-  blurb: "Google Cloud projects for AI services, archive and cloud-native research workloads. Eligibility and tiers apply."
-  tags: [Cloud, AI services, Archive]
+  blurb: "AI model access, specialized hardware not available on campus, and archive storage. Other cloud work as recharged projects."
+  tags: [AI access, Specialized hardware, Archive]
   status: By review
-  cost: Tiered
+  cost: Tier 1 + recharge
   data: Varies
   terms: Ursa Major guidelines
-  t: "compute cloudai webservice interactive storage p12 norecharge lab grant"
+  t: "compute cloudai gpu batch webservice interactive storage p12 norecharge lab grant"
 - id: nsf-access
   name: NSF ACCESS
   url: /services/nsf-access/
@@ -142,7 +142,7 @@
   url: /services/secure-enclave/
   icon: fa-solid fa-lock
   group: Sensitive data
-  blurb: "A controlled cloud environment for regulated data, after review, an approved data security plan and training."
+  blurb: "A controlled cloud environment for NIST SP 800-171 and CMMC Level 2 work, after review, an approved data security plan and training."
   tags: [Regulated data, By review]
   status: By review
   cost: Setup + annual fee + usage
