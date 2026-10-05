@@ -13,6 +13,9 @@ import html, json, os, re, sys, urllib.parse
 
 def main():
     site = sys.argv[1]
+    import os as _os
+    _cfg = open(_os.path.join(_os.path.dirname(__file__), "..", "_config.yml"), encoding="utf-8").read()
+    PREVIEW = bool(re.search(r"^preview:\s*true", _cfg, re.M))
     base = sys.argv[2] if len(sys.argv) > 2 else "/rc-dev"
     problems = []
     pages = []
@@ -32,7 +35,7 @@ def main():
         if re.search(r"\{\{|\{%", body):
             m = re.search(r".{0,40}(\{\{|\{%).{0,40}", body)
             problems.append((rel, "raw Liquid in output: " + (m.group(0) if m else "")))
-        if not is_redirect and 'name="robots" content="noindex' not in s:
+        if PREVIEW and not is_redirect and 'name="robots" content="noindex' not in s:
             problems.append((rel, "no noindex tag"))
         text = html.unescape(re.sub(r"<[^>]+>", " ", body))
         bad = sorted(set(c for c in text if ord(c) > 127 and c != "\u00a0"))
