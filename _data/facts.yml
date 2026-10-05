@@ -100,16 +100,16 @@ cephrds_purchase:
 cloud_admin_setup:
   label: Cloud account setup fee (enclave, cloud discount programs)
   value: "$135 one time"
-  source: "ITS recharge terms (set out in the MOU)"
+  source: "ITS recharge terms (set out in the MOU); confirmed by Research Computing"
   url: ""
-  as_of: 2026-02-25
+  as_of: 2026-10-04
   owner: ITS
 cloud_admin_annual:
   label: Cloud account annual support fee (enclave, cloud discount programs)
   value: "$407 per year"
-  source: "ITS recharge terms (set out in the MOU)"
+  source: "ITS recharge terms (set out in the MOU); confirmed by Research Computing"
   url: ""
-  as_of: 2026-02-25
+  as_of: 2026-10-04
   owner: ITS
 google_drive_default:
   label: Google Drive included storage
