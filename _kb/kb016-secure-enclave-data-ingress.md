@@ -3,42 +3,49 @@ title: "Secure enclave: data transfer rules"
 kb_id: KB016
 topic: Security
 audience: "Principal Investigators (PIs), Technical Leads, Research Staff"
-updated: 2026-02-26
+reviewed: 2026-10-04
 owner: Research Computing
 redirect_from:
   - /Knowledge_Base/KB016_Secure_Enclave_Data_Ingress.html
+review_notes:
+  - "Removed an internal host name and the claim that data never touches any network; described the transfer path in general terms and pointed to the project's DSP and training for the exact steps, consistent with KB014 and KB015."
+  - "Rewrote the decryption section generically: the earlier text said providers such as NIH phone a passphrase to a named role, which may not match how dbGaP issues decryption keys."
+  - "CHECK: the access path (bastion host with UCR SSO and Duo, then a transfer node inside the enclave) still matches the current enclave design."
+  - "CHECK: how decryption keys or passphrases are received and escrowed (UISL role, approved password manager) matches current practice and the DSP template."
 ---
 
-## 1. The Golden Rule of Data Ingress
+These rules apply to projects in the [secure research enclave](../../services/secure-enclave/). The project's data security plan (DSP) and the mandatory enclave training set the exact steps for each project. Where they differ from this summary, the DSP applies. See [KB014](../kb014-secure-enclave-guide/) for an overview of the enclave and [KB015](../kb015-secure-enclave-onboarding-checklist/) for onboarding.
 
-High-compliance data (such as NIH dbGaP genomic data or CUI) must **NEVER** be downloaded to a local laptop, office workstation, external hard drive, or standard UCR campus server. Doing so constitutes a severe security breach and an immediate violation of the institutional Data Security Plan (DSP) and federal NIST 800-171 boundaries.
+## 1. The basic rule
 
-All data must flow directly from the external agency (e.g., NIH, DoD) into the isolated UCR Secure Research Enclave.
+Controlled data, such as NIH dbGaP controlled-access data or Controlled Unclassified Information (CUI), must **never** be downloaded to a laptop, office workstation, external drive or ordinary campus server. Doing so is a security incident and a violation of the project's DSP and of the NIST SP 800-171 controls the project has agreed to.
 
-## 2. Who is Authorized to Download the Data?
+Data goes directly from the provider (for example, NIH or a Department of Defense sponsor) into the project's workspace in the enclave.
 
-Only an **"Approved User"** who is explicitly named and authorized in the Data Use Agreement (DUA) or Data Use Certification (DUC) is permitted to initiate the data transfer. 
-*   This is typically the Principal Investigator (PI) or their designated Primary Technical Contact.
-*   *Note: UCR Research Computing staff and systems engineers cannot download the data on your behalf unless they have been formally named as IT Collaborators on your federal application.*
+## 2. Who may download the data
 
-## 3. Step-by-Step Ingress Protocol
+Only an **Approved User** who is named and authorized in the data use agreement (DUA) or data use certification (DUC) may start the transfer.
 
-To securely transfer the data from the provider into your project's storage bucket, authorized researchers must follow this exact pipeline:
+*   This is usually the Principal Investigator (PI) or a designated technical contact.
+*   Research Computing staff cannot download the data on your behalf unless they are formally named, for example as IT collaborators, on the project's approved application.
 
-1.  **The Bastion Jump:** The Approved User logs into the UCR Secure Enclave via the secure Bastion Host (Jump Box) using their UCR Single Sign-On (SSO) and mandatory Duo Multi-Factor Authentication (MFA).
-2.  **The Transfer Node:** From the Bastion Host, the user connects to the dedicated, heavily monitored "Transfer Node" (`sys-stellar-tl01`) located *inside* the isolated Virtual Private Cloud (VPC) Service Perimeter.
-3.  **Direct Ingress:** From the Transfer Node, the user initiates the download directly from the external agency's repository (e.g., dbGaP) using an approved, encrypted channel (sFTP or HTTPS).
-4.  **The Landing Zone:** The data flows directly into the enclave's encrypted Google Cloud Storage (GCS) bucket. The data never touches the public UCR network or any physical endpoint devices.
+## 3. How data is brought into the enclave
 
-## 4. Decryption Passphrase Handling (Out-of-Band)
+The training covers the details. In outline:
 
-High-compliance datasets are typically heavily encrypted by the provider before transmission. 
+1.  **Sign in through the enclave's controlled access point.** The Approved User signs in through the enclave's bastion (jump) host with UCR Single Sign-On and Duo multi-factor authentication.
+2.  **Connect to the transfer node.** From the bastion host, the user connects to the project's designated transfer node inside the enclave's network perimeter. Activity on this node is logged and monitored.
+3.  **Download from the provider.** From the transfer node, the user downloads the data from the provider's repository over an encrypted channel the provider supports (for example, SFTP or HTTPS, or the provider's own download tool).
+4.  **Store in the project's storage.** The data lands in the project's encrypted cloud storage inside the enclave. It is not copied to any device or system outside the enclave.
 
-*   **Out-of-Band Transmission:** The external agency (like the NIH) will not email the decryption password. They will transmit the unique decryption passphrase **out-of-band via telephone** directly to the designated Unit Information Security Lead (UISL) listed on your DSP (often the Director of Research Computing or the CISO).
-*   **Escrow:** The UISL will securely escrow that passphrase in a UCR-approved enterprise password management system.
-*   **Decryption Execution:** Once the encrypted data payload has safely landed inside the Secure Enclave storage bucket, the PI or Tech Lead will coordinate a live session with the UISL to decrypt the data within the secure boundary.
+## 4. Decryption keys and passphrases
 
----
+Providers often encrypt controlled datasets before release and issue a decryption key or passphrase separately.
 
-**Questions?**
-If you need assistance configuring your SFTP client on the Transfer Node, or need to schedule a decryption session, please contact the Research Computing team.
+*   **Receive keys only as the provider and the DSP direct.** Never send or store a key or passphrase by email, chat, or in a file outside the enclave.
+*   **Escrow.** Keys and passphrases are held in a UCR-approved password management system by the person the DSP names for this role, such as the project's Unit Information Security Lead (UISL).
+*   **Decrypt inside the enclave.** Once the encrypted data is in the project's enclave storage, it is decrypted there, following the DSP. Decrypted data stays inside the enclave.
+
+## Questions
+
+For help setting up a transfer client on the transfer node, or to arrange a decryption session, contact Research Computing at research-computing@ucr.edu.

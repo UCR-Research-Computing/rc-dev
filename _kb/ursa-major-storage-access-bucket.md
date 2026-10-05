@@ -2,96 +2,103 @@
 title: "Accessing an Ursa Major storage bucket"
 topic: Storage
 owner: Research Computing
+reviewed: 2026-10-04
+review_notes:
+  - "Replaced the legacy gsutil commands with gcloud storage (Google now marks gsutil as legacy) and the object ACL sharing example with bucket IAM, which also works with uniform bucket-level access."
+  - "Rewrote the console sharing steps: the old Viewer/Commenter/Editor 'Share' dialog and public/private upload options described Google Drive, not Cloud Storage. Added a warning against public access."
+  - "Added tier context: Standard storage is Tier 2 recharge, archive classes are Tier 1; data movement out of Google Cloud can carry charges."
+  - "CHECK: whether Ursa Major projects allow lab members to grant bucket roles to people outside the project, or whether that request goes through Research Computing."
 redirect_from:
   - /Knowledge_Base/Ursa_Major_Research_Storage_How_to_Access_Bucket.html
 ---
 
-### Web Console:
-* Go to the [Google Cloud Console](https://console.cloud.google.com/).
-* Select the project where your Ursa Major Research Storage is stored.
-* Click on the "Storage" section from the left menu.
-* Click on the bucket you want to access.
-* You will be redirected to the bucket's details page. Here, you can upload, download, and share files.
+This guide shows how to upload, download and share files in a Google Cloud Storage bucket in your Ursa Major project, using the web console or the command line. To create a bucket first, see [Creating an Ursa Major storage bucket](../ursa-major-storage-create-bucket/).
 
-Uploading Files to a Ursa Major Research Storage using the Web Console:
-* From the bucket's details page, click on the "Upload Files" button.
-* Select the files you want to upload or drag and drop them into the upload window.
-* You can add a label to each file and specify the access control (Public or Private).
-* Click on the "Start Upload" button.
-* Wait for the upload process to complete.
-* To verify the upload, go to the bucket's details page and check the list of files.
+**Costs:** Standard-class storage is Tier 2 and is recharged to a lab funding source under an MOU. Archive classes (such as Coldline) are Tier 1 under current terms, within limits. Downloading data out of Google Cloud, and reading data from archive classes, can carry charges. See [KB005: Ursa Major service tiers](../kb005-ursa-major-service-tiers/) and [Ursa Major cloud storage](../ursa-major-research-storage/).
 
-Downloading Files from a Ursa Major Research Storage using the Web Console:
-* From the bucket's details page, click on the file you want to download.
-* Click on the "Download" button.
-* Wait for the download process to complete.
-* The file will be saved to your device.
+**Sensitive data:** P3, P4 or regulated data needs a review before it is stored. See [Security and Data](../../security/).
 
-Sharing Files from a Ursa Major Research Storage using the Web Console:
-* From the bucket's details page, click on the file you want to share.
-* Click on the "Share" button.
-* Specify the email addresses of the people you want to share the file with.
-* Choose the permission level (Viewer, Commenter, or Editor).
-* Click on the "Send" button.
-* An email will be sent to the people you shared the file with, with a link to access it.
+## Web console
 
-### Step by Step Instruction to access Ursa Major Research Storage using gsutil (Command line):
+### Open the bucket
 
-* Install the Google Cloud SDK on your computer. This will give you access to the gsutil command-line tool.
+1. Go to the [Google Cloud console](https://console.cloud.google.com/) and select your project (for example `my-lab-project`).
+2. Open the navigation menu and select **Cloud Storage**, then **Buckets**.
+3. Click the bucket name (for example `my-lab-bucket`). The **Objects** tab lists its files and folders.
 
-* Run the following command to verify that the Google Cloud SDK is installed correctly:
+### Upload files
 
-```bash
-gcloud version
-```
+1. On the **Objects** tab, click **Upload**, then choose **Upload files** or **Upload folder**. You can also drag files onto the page.
+2. Wait for the upload to finish. Progress shows at the bottom of the page.
+3. Check that the files appear in the object list.
 
-* Run the following command to log in to your Google Cloud Account:
+For large uploads (many files or many gigabytes), the command line is more reliable.
 
-```bash
-gcloud auth login
-```
+### Download files
 
-* Once you are logged in, run the following command to list all the available Ursa Major Research Storages in your Google Cloud account:
+1. On the **Objects** tab, click the file name.
+2. Click **Download**. The file is saved to your computer.
 
-```bash
-gsutil ls
-```
+### Share access
 
-* To upload a file to a Ursa Major Research Storage, run the following command:
+Cloud Storage shares access by granting a role to a person or group, not by sending a link.
 
-```bash
-gsutil cp <file-path> gs://<bucket-name>
-```
+1. Open the bucket and select the **Permissions** tab.
+2. Click **Grant access**.
+3. Enter the person's or group's email address.
+4. Choose a role, for example **Storage Object Viewer** (read only) or **Storage Object User** (read and write).
+5. Click **Save**.
 
-Example:
+The person can then open the bucket in the console or with the command line. Grant the smallest role that does the job, and remove access when it is no longer needed. Do not make buckets or objects public.
 
-```bash
-gsutil cp myfile.txt gs://mybucket
-```
-* To download a file from a Ursa Major Research Storage, run the following command:
+## Command line (gcloud)
 
-```bash
-gsutil cp gs://<bucket-name>/<file-name> <destination-path>
-```
+1. Install the [Google Cloud CLI](https://cloud.google.com/sdk/docs/install), or use [Cloud Shell](https://console.cloud.google.com/) in the console, which has it already.
+2. Check the installation:
 
-Example:
+   ```bash
+   gcloud version
+   ```
 
-```bash
-gsutil cp gs://mybucket/myfile.txt ~/Downloads
-```
+3. Sign in and set your project:
 
-* To share a file in a Ursa Major Research Storage with others, you can grant them access using the following command:
+   ```bash
+   gcloud auth login
+   gcloud config set project my-lab-project
+   ```
 
-```bash
-gsutil acl ch -u <email-address>:<role> gs://<bucket-name>/<file-name>
-```
+4. List the buckets in the project, and the contents of one bucket:
 
-Example:
+   ```bash
+   gcloud storage ls
+   gcloud storage ls gs://my-lab-bucket
+   ```
 
-```bash
-gsutil acl ch -u friend@example.com:R gs://mybucket/myfile.txt
-```
+5. Upload a file, or a whole folder:
 
-Here, we have granted 'read' access to the user friend@example.com for the file 'myfile.txt' in the bucket 'mybucket'.
+   ```bash
+   gcloud storage cp myfile.txt gs://my-lab-bucket/
+   gcloud storage cp --recursive my-folder gs://my-lab-bucket/
+   ```
 
-Note: Replace the values in <> with the actual values that apply to your setup.
+6. Download a file:
+
+   ```bash
+   gcloud storage cp gs://my-lab-bucket/myfile.txt ~/Downloads/
+   ```
+
+7. Give a colleague read access to the bucket:
+
+   ```bash
+   gcloud storage buckets add-iam-policy-binding gs://my-lab-bucket \
+       --member=user:colleague@ucr.edu \
+       --role=roles/storage.objectViewer
+   ```
+
+   Replace `my-lab-project`, `my-lab-bucket` and the email address with your own values.
+
+## Other ways to connect
+
+- To mount a bucket as a folder on Linux, see [Mounting Google Cloud Storage on Linux with rclone](../mount-google-cloud-storage/).
+- Google's guide: [Discover object storage with the gcloud tool](https://cloud.google.com/storage/docs/discover-object-storage-gcloud).
+- Questions: [research-computing@ucr.edu](mailto:research-computing@ucr.edu).

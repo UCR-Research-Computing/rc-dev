@@ -2,361 +2,286 @@
 title: "Running Genomics Nextflow Pipelines on the UCR HPCC Cluster"
 topic: HPCC
 owner: Research Computing
+reviewed: 2026-10-04
+review_notes:
+  - "Rewrote the example pipeline and config: the old main.nf mixed DSL1 and DSL2 syntax and would not run, and the old config set executor options at the wrong level. The new main.nf and nextflow.config were test-run with Nextflow 24.10 (local executor, FastQC stubbed); the Slurm profile was checked with nextflow config."
+  - "Corrected HPCC facts against hpcc.ucr.edu: head nodes are bluejay and skylark, a nextflow module exists, GPU types and partition limits now point to the HPCC pages, Nextflow logs are .nextflow.log and .command.log (not slurm-JOBID.out). Storage size and lab fee now come from facts."
+  - "Added running the Nextflow driver as its own batch job, since HPCC head nodes are limited to small tasks (under 1 GB RAM)."
+  - "CHECK: the HPCC allows sbatch from inside a running job (the driver job submits the task jobs). If not, the driver should run on a head node in tmux instead."
+  - "CHECK: module versions (nextflow 23.04/23.08, java 17.0.2, fastqc 0.11.9) are from the HPCC modules list and may change; the Slack link is still the right public channel."
 redirect_from:
  - /Knowledge_Base/gnextnext5.html
  - /Knowledge_Base/nextflow-genomics.html
 ---
 
-### Introduction
+Nextflow is a workflow manager for building scalable, reproducible pipelines, widely used in bioinformatics. This guide shows how to run a Nextflow pipeline on the UCR High-Performance Computing Center (HPCC) cluster, with Nextflow submitting each step as a Slurm job.
 
-This article provides a guide to creating and running genomics pipelines using Nextflow on the University of California, Riverside High-Performance Computing Cluster (HPCC) . Nextflow is a powerful workflow management system that simplifies the creation of complex, scalable, and reproducible pipelines, especially in bioinformatics. The UCR HPCC cluster utilizes Slurm as its default scheduler, and this guide will focus on leveraging Slurm to execute your Nextflow pipelines efficiently.
+You will:
 
-In this article, you will learn how to:
+* set up Nextflow on the cluster,
+* write a small genomics pipeline (FastQC on a set of FASTQ files),
+* configure Nextflow to submit jobs to Slurm partitions,
+* run, monitor and tune the pipeline.
 
-*  Set up Nextflow on the HPCC cluster.
-*  Design a basic genomics pipeline using Nextflow.
-*  Configure Nextflow to run jobs using Slurm on the HPCC partitions.
-*  Submit and monitor your Nextflow pipelines.
-*  Optimize your pipeline execution on the HPCC resources.
+The HPCC documentation at [hpcc.ucr.edu](https://hpcc.ucr.edu) is the authority on partitions, limits and software. Where this guide and the HPCC site differ, follow the HPCC site.
 
-Let's get started!
+## Prerequisites
 
-### Table of Contents
+* **An HPCC account.** See [Getting an HPCC account](../kb004-hpcc-account-creation/). Accounts belong to a registered lab; the annual lab registration is {% include fact.html id="hpcc_lab_fee" %}.
+* **Basic Linux and Slurm skills:** the command line, `sbatch` and `squeue`.
+* **Your data on HPCC storage.** Your home directory has a {% include fact.html id="hpcc_user_storage" bare=true %} quota (see [HPCC Recharging Rates](https://hpcc.ucr.edu/about/overview/rates/)), which is too small for most genomics data. Use your lab's `/bigdata` space for inputs, results and the Nextflow work directory. See the HPCC [Data Storage](https://hpcc.ucr.edu/manuals/hpc_cluster/storage/) page and [HPCC storage](../../services/hpcc-storage/).
 
-1. [Prerequisites](#prerequisites)
-2. [Setting up Nextflow on the HPCC](#setting-up-nextflow-on-the-hpcc)
-3. [Designing a Basic Genomics Nextflow Pipeline](#designing-a-basic-genomics-nextflow-pipeline)
-4. [Configuring Nextflow for Slurm on HPCC](#configuring-nextflow-for-slurm-on-hpcc)
-5. [Running Your Nextflow Pipeline](#running-your-nextflow-pipeline)
-6. [Monitoring Your Pipeline](#monitoring-your-pipeline)
-7. [Optimizing Your Pipeline for HPCC](#optimizing-your-pipeline-for-hpcc)
-8. [Getting Help and Resources](#getting-help-and-resources)
+## Setting up Nextflow
 
-### 1. Prerequisites <a name="prerequisites"></a>
+### Log in
 
-Before you begin, ensure you have the following:
-
-*  **HPCC Account:** You need an active account on the UCR HPCC cluster. If you don't have one, request an account by emailing support@hpcc.ucr.edu. Accounts are available to researchers from all departments and colleges at UC Riverside for a minimal recharge fee.
-*  **Basic HPC Knowledge:** Familiarity with using the command line in a Linux environment and basic HPC concepts like schedulers (Slurm) and job submission is helpful.
-*  **Genomics Workflow Understanding:** A general understanding of the genomics workflow you intend to implement in Nextflow is essential.
-*  **Data Access:** Ensure your genomics data is accessible on the HPCC storage. The HPCC offers approximately 6 PB of network storage via GPFS.
-
-### 2. Setting up Nextflow on the HPCC <a name="setting-up-nextflow-on-the-hpcc"></a>
-
-The recommended way to access the HPCC cluster is through the web console SSH. Once you have SSH access to the cluster, follow these steps to set up Nextflow:
-
-**Step 2.1: Connect to the HPCC**
-
-Use the web console SSH or your preferred SSH client to connect to the HPCC head node:
+Connect with SSH. The address `cluster.hpcc.ucr.edu` sends you to one of the head nodes (bluejay or skylark):
 
 ```bash
 ssh username@cluster.hpcc.ucr.edu
 ```
-Replace `username` with your HPCC username. You will be automatically directed to one of the head nodes (Jay or Lark).
 
-**Step 2.2: Install Nextflow**
+Replace `username` with your HPCC username. See the HPCC [login instructions](https://hpcc.ucr.edu/manuals/access/login/) for Duo and SSH key options.
 
-You can install Nextflow in your home directory. A convenient location is within a dedicated `apps` directory. If you don't have one, create it:
+### Option A: use the HPCC module
+
+The HPCC provides Nextflow as a module. List the versions and load one:
 
 ```bash
-mkdir $HOME/apps
+module avail nextflow
+module load nextflow
+nextflow -v
+```
+
+### Option B: install your own copy
+
+If you need a newer Nextflow than the module offers, install it in your home directory. Nextflow needs Java 17 or later; load the HPCC Java module first:
+
+```bash
+module load java/17.0.2
+mkdir -p $HOME/apps
 cd $HOME/apps
+curl -s https://get.nextflow.io | bash
 ```
 
-Download the Nextflow binary using `wget`:
-
-```bash
-wget -qO- get.nextflow.io | bash
-```
-
-This command downloads the Nextflow installation script and executes it, placing the `nextflow` executable in your `$HOME/apps` directory.
-
-**Step 2.3: Add Nextflow to your PATH (Optional but Recommended)**
-
-To run Nextflow commands from anywhere in the terminal, add the Nextflow directory to your `PATH` environment variable. You can do this by adding the following line to your `~/.bashrc` file:
+This places a `nextflow` launcher in `$HOME/apps`. Add that directory to your `PATH`:
 
 ```bash
 echo 'export PATH=$PATH:$HOME/apps' >> ~/.bashrc
 source ~/.bashrc
-```
-
-Now you should be able to run `nextflow` commands directly. Verify the installation by checking the Nextflow version:
-
-```bash
 nextflow -v
 ```
 
-You should see the installed Nextflow version printed in the output.
+Load the same Java module (in `~/.bashrc` or your job script) whenever you run this copy.
 
-### 3. Designing a Basic Genomics Nextflow Pipeline <a name="designing-a-basic-genomics-nextflow-pipeline"></a>
+## A basic genomics pipeline
 
-Let's create a simple example Nextflow pipeline to demonstrate the basic concepts. This pipeline will use FastQC to perform quality control on a set of FASTQ files.
+This example runs FastQC on every `*.fastq.gz` file in an input directory.
 
-**Step 3.1: Create a Pipeline Directory**
-
-Create a directory for your Nextflow pipeline:
+### Create a pipeline directory
 
 ```bash
 mkdir nf-genomics-pipeline
 cd nf-genomics-pipeline
 ```
 
-**Step 3.2: Create the Nextflow Script (`main.nf`)**
+### Write the pipeline (`main.nf`)
 
-Create a file named `main.nf` using your preferred text editor (e.g., `vim`, `nano`). Paste the following Nextflow script into the file:
-
-```nextflow
+```groovy
 #!/usr/bin/env nextflow
+nextflow.enable.dsl = 2
 
-params.input_dir = "${baseDir}/data/fastq" // Default input directory
-params.output_dir = "${baseDir}/results" // Default output directory
+params.input_dir  = "${projectDir}/data/fastq"
+params.output_dir = "${projectDir}/results"
 
-Channel
-  .fromPath( params.input_dir + "/*.fastq.gz" )
-  .ifEmpty { exit "Input directory '${params.input_dir}' contains no FASTQ files" }
-  .set { reads_ch }
+process FASTQC {
+    tag "${sample_id}"
+    module 'fastqc'
+    publishDir "${params.output_dir}/${sample_id}", mode: 'copy'
 
-process fastqc {
-  tag { sample_id }
-  publishDir "${params.output_dir}/${sample_id}/fastqc", mode: 'copy'
+    cpus 2
+    memory '4 GB'
+    time '1h'
 
-  input:
-  tuple val(sample_id), path(reads) from reads_ch
+    input:
+    tuple val(sample_id), path(reads)
 
-  output:
-  path "fastqc_report.html" into fastqc_reports_ch
+    output:
+    path "*_fastqc.{html,zip}"
 
-  script:
-  """
-  module load fastqc # Load FastQC module on HPCC
-  fastqc ${reads} -o .
-  mv ${sample_id}* fastqc_report.html
-  """
+    script:
+    """
+    fastqc --threads ${task.cpus} -o . ${reads}
+    """
 }
 
 workflow {
-  reads_ch
-    .map { file -> tuple(file.name.replace('.fastq.gz',''), file) }
-    .view() // Optional: Print input files to console
-    .groupTuple()
-    .fastqc()
+    reads_ch = Channel
+        .fromPath("${params.input_dir}/*.fastq.gz", checkIfExists: true)
+        .map { fq -> tuple(fq.simpleName, fq) }
+        .view()
+
+    FASTQC(reads_ch)
 }
 ```
 
-**Explanation of the Script:**
+What it does:
 
-*  **`params.input_dir` and `params.output_dir`:** Define input and output directories as parameters, allowing for easy customization.
-*  **`Channel.fromPath(...)`:** Creates a Nextflow channel named `reads_ch` that emits FASTQ files found in the input directory.
-*  **`process fastqc { ... }`:** Defines a process named `fastqc` that will execute the FastQC software.
-  *  **`tag { sample_id }`:** Tags each process execution with the `sample_id` for better tracking.
-  *  **`publishDir ...`:** Defines where to publish the output files after the process completes. In this case, it copies the `fastqc_report.html` to the specified output directory under a sample-specific folder.
-  *  **`input: tuple val(sample_id), path(reads) from reads_ch`:** Declares the input to the process, receiving tuples of `(sample_id, reads_path)` from the `reads_ch` channel.
-  *  **`output: path "fastqc_report.html" into fastqc_reports_ch`:** Declares the output of the process, emitting the `fastqc_report.html` file into the `fastqc_reports_ch` channel (though this channel is not used further in this simple example).
-  *  **`script: ...`:** Contains the shell script to be executed within the process.
-    *  **`module load fastqc`:** Crucially, this line loads the FastQC module available on the HPCC, ensuring the software is available in the execution environment. You can find available modules using `module avail`.
-    *  **`fastqc ${reads} -o .`:** Executes FastQC on the input reads, outputting results to the current directory (`.`).
-    *  **`mv ...`:** Renames the FastQC output HTML file to `fastqc_report.html` for consistent output naming.
-*  **`workflow { ... }`:** Defines the main workflow logic.
-  *  **`reads_ch.map { ... }.groupTuple().fastqc()`:** Chains together operations on the `reads_ch` channel:
-    *  **`.map { ... }`:** Transforms each input file path into a tuple of `(sample_id, file_path)`.
-    *  **`.view()`:** (Optional) Prints the emitted tuples to the console for debugging.
-    *  **`.groupTuple()`:** Groups tuples (though not strictly necessary here as we expect single FASTQ files per sample in this basic example, it's good practice for paired-end reads or more complex scenarios).
-    *  **`.fastqc()`:** Executes the `fastqc` process for each item in the channel.
+* **`params.input_dir` and `params.output_dir`:** default input and output locations. Override them on the command line, for example `--input_dir /bigdata/labname/username/fastq`.
+* **`process FASTQC`:** one step of the pipeline.
+  * `tag`: labels each task with its sample name in the progress display.
+  * `module 'fastqc'`: Nextflow runs `module load fastqc` inside each job, so the HPCC's FastQC is available.
+  * `publishDir`: copies the outputs to `results/<sample>/` when a task finishes.
+  * `cpus`, `memory`, `time`: the resources each task requests from Slurm.
+  * `input`: a tuple of sample name and FASTQ file.
+  * `output`: the HTML report and zip file FastQC writes.
+  * `script`: the shell command each task runs.
+* **`workflow`:** builds a channel of FASTQ files, turns each into a `(sample_name, file)` tuple, prints it (`view`) and runs `FASTQC` on each, in parallel.
 
-**Step 3.3: Create Input Data (Optional for Testing)**
-
-For testing purposes, you can create a dummy FASTQ file in a `data/fastq` directory relative to your pipeline script:
+### Add test input (optional)
 
 ```bash
 mkdir -p data/fastq
-touch data/fastq/sample1.fastq.gz
-touch data/fastq/sample2.fastq.gz
 ```
 
-In a real scenario, you would replace these dummy files with your actual genomics FASTQ data.
+Copy a few real (or small test) `.fastq.gz` files into `data/fastq/`. FastQC needs valid FASTQ content; empty placeholder files make it fail.
 
-### 4. Configuring Nextflow for Slurm on HPCC <a name="configuring-nextflow-for-slurm-on-hpcc"></a>
+## Configuring Nextflow for Slurm
 
-To run your Nextflow pipeline on the HPCC using Slurm, you need to create a Nextflow configuration file.
-
-**Step 4.1: Create `nextflow.config`**
-
-In the same directory as your `main.nf` script, create a file named `nextflow.config` and add the following configuration:
+Create `nextflow.config` in the same directory:
 
 ```groovy
 profiles {
-  slurm {
-    executor = 'slurm'
-    queue = 'epyc' // Default partition, consider changing based on needs (intel, batch, highmem, gpu)
-    // account = 'your_allocation_name' // Uncomment and replace if you need to specify an allocation
-    submitOptions = {
-      "-J nextflow_pipeline" // Job name in Slurm queue
+    slurm {
+        process.executor         = 'slurm'
+        process.queue            = 'epyc'
+        executor.queueSize       = 50
+        executor.submitRateLimit = '10/1min'
     }
-    // Optional resource requests (can also be defined within processes)
-    // beforeScript = 'module load java' // Uncomment if your Nextflow version requires a specific Java module
-    // cpus = 1
-    // memory = '4.gb'
-    // time = '1h'
-  }
 }
 ```
 
-**Explanation of `nextflow.config`:**
+* **`profiles { slurm { ... } }`:** a profile you turn on with `-profile slurm`. Without it, Nextflow runs tasks on the machine where it was started.
+* **`process.executor = 'slurm'`:** submit each task as a Slurm job.
+* **`process.queue = 'epyc'`:** the default partition. Individual processes can override it with a `queue` directive.
+* **`executor.queueSize` and `executor.submitRateLimit`:** cap how many jobs Nextflow keeps in the queue and how fast it submits them. Users can have at most 5000 jobs queued or running at once on the HPCC.
 
-*  **`profiles { slurm { ... } }`:** Defines a configuration profile named `slurm`. You will use this profile when running your pipeline on HPCC.
-*  **`executor = 'slurm'`:** Specifies that Nextflow should use the Slurm executor.
-*  **`queue = 'epyc'`:** Sets the default Slurm partition to `epyc`. You can change this to `intel`, `batch`, `highmem`, `gpu`, or a lab-specific partition if applicable, based on your pipeline's requirements. The `epyc` partition uses AMD EPYC cores and is a good general-purpose option.
-*  **`account = 'your_allocation_name'`:** If your lab uses a specific allocation name, uncomment this line and replace `'your_allocation_name'` with your allocation name. **Note:** In Slurm submission scripts on UCR HPCC, allocation names are generally not required in SBATCH commands.
-*  **`submitOptions = { "-J nextflow_pipeline" }`:** Allows you to pass additional options to the `sbatch` command. Here, we set the Slurm job name to `nextflow_pipeline`.
-*  **`beforeScript = 'module load java'`:** If you encounter issues with Java versions (though Nextflow typically bundles its own), you might need to uncomment this and load a Java module.
-*  **`cpus`, `memory`, `time`:** These are commented out in the global profile. It's generally better to define resource requests **within each `process`** in your Nextflow script for more granular control and optimization.
+You do not need a Slurm account option on the HPCC. Put resource requests (`cpus`, `memory`, `time`) on each process, as in `main.nf`, rather than one setting for all.
 
-**Choosing the Right Partition:**
+### Choosing partitions
 
-*  **`epyc`**: AMD EPYC cores, good for general compute, default RAM 1GB, default time 168 hours.
-*  **`intel`**: Intel Broadwell cores, good for general compute, default RAM 1GB, default time 168 hours.
-*  **`batch`**: AMD cores, good for general compute, default RAM 1GB, default time 168 hours.
-*  **`highmem`**: Intel cores, for memory-intensive jobs, RAM from 100GB to 1000GB, default time 48 hours. **Requires explicit memory request >= 100GB.**
-*  **`gpu`**: AMD/Intel cores with NVIDIA GPUs (K80, P100, A100), for GPU-accelerated tasks, default RAM 1GB, default time 48 hours. **Requires explicit GPU resource request.**
-*  **`short`**: Mixed nodes, for short jobs (max 2 hours), default RAM 1GB.
+* **`epyc`**, **`intel`**, **`batch`**: general CPU work (AMD 2021, Intel 2016 and AMD 2012 nodes). Default 1 GB memory and 7 days walltime if you do not request otherwise.
+* **`highmem`**: memory-heavy steps. Jobs must request at least 100 GB.
+* **`gpu`**: GPU-accelerated tools. Jobs must request a GPU with `--gres`.
+* **`short`**: mixed nodes, 2 hours maximum. Good for quick tests.
 
-Select the partition that best matches your pipeline's CPU, memory, time, and software (CPU architecture, GPU) requirements. For this basic FastQC example, `epyc` or `intel` are suitable.
+Limits per user, per job and per lab are on the HPCC [Queue Policies](https://hpcc.ucr.edu/manuals/hpc_cluster/queue/) page; node types and GPU models are on the HPCC [Managing Jobs](https://hpcc.ucr.edu/manuals/hpc_cluster/jobs/) page. For this FastQC example, `epyc` or `intel` is fine.
 
-### 5. Running Your Nextflow Pipeline <a name="running-your-nextflow-pipeline"></a>
+## Running the pipeline
 
-Now you are ready to run your Nextflow pipeline on the HPCC.
-
-**Step 5.1: Submit the Pipeline**
-
-From the directory containing your `main.nf` and `nextflow.config` files, execute the following command to submit your pipeline to Slurm using the `slurm` profile:
+The Nextflow driver keeps running for the whole pipeline and can use a few GB of memory. HPCC head nodes are for small tasks, so run the driver as its own small batch job. Save this as `run_nextflow.sh` in the pipeline directory:
 
 ```bash
-nextflow run main.nf -profile slurm
+#!/bin/bash -l
+#SBATCH --job-name=nf-driver
+#SBATCH --partition=epyc
+#SBATCH --cpus-per-task=2
+#SBATCH --mem=4G
+#SBATCH --time=2-00:00:00
+#SBATCH --output=nf-driver_%j.out
+
+module load nextflow                 # or: module load java/17.0.2 for your own copy
+export NXF_OPTS='-Xms500M -Xmx2G'    # keep the driver's Java memory inside the job
+
+nextflow run main.nf -profile slurm \
+    -work-dir /bigdata/labname/username/nf-work \
+    -resume
 ```
 
-**Explanation:**
-
-*  **`nextflow run main.nf`:** This is the basic command to run a Nextflow pipeline, specifying `main.nf` as the script.
-*  **`-profile slurm`:** This tells Nextflow to use the `slurm` configuration profile you defined in `nextflow.config`, which sets up the Slurm executor and other HPCC-specific settings.
-
-Nextflow will parse your script, configure the Slurm jobs, and submit them to the HPCC scheduler. You will see output in your terminal indicating the pipeline execution.
-
-**Step 5.2: Check Output**
-
-Once the pipeline completes successfully, you will find the FastQC output reports in the `results` directory (as defined by `params.output_dir` and `publishDir` in your script):
+Replace `labname` and `username` with your own. Then submit it:
 
 ```bash
-ls results/sample1/fastqc/
-ls results/sample2/fastqc/
+sbatch run_nextflow.sh
 ```
 
-You should see `fastqc_report.html` files and other FastQC output files in these directories.
+* **`-profile slurm`:** uses the Slurm settings from `nextflow.config`, so each FASTQC task becomes its own Slurm job.
+* **`-work-dir`:** where Nextflow keeps intermediate files. Putting it on `/bigdata` keeps your home directory under quota.
+* **`-resume`:** reuses results from earlier runs where inputs and code have not changed (see below).
 
-### 6. Monitoring Your Pipeline <a name="monitoring-your-pipeline"></a>
+For a quick test with a few small files you can also run `nextflow run main.nf -profile slurm` directly in an interactive session (`srun -p short --mem=4G -c 2 -t 2:00:00 --pty bash -l`).
 
-You can monitor your Nextflow pipeline execution in several ways:
+When the pipeline finishes, the reports are in `results/`:
 
-**Step 6.1: Nextflow Execution Log**
+```bash
+ls results/sample1/
+# sample1_fastqc.html  sample1_fastqc.zip
+```
 
-Nextflow provides a detailed execution log in the `.nextflow/` directory within your pipeline directory. You can view the log file (e.g., `.nextflow/runs/XXXXXXXXX/pipeline.log`) to see real-time progress, errors, and resource usage.
+## Monitoring the pipeline
 
-**Step 6.2: Slurm Job Status**
+**Nextflow output and logs**
 
-Use Slurm commands to monitor the jobs submitted by Nextflow.
+* The driver job's output file (`nf-driver_<JOBID>.out`) shows progress for each process.
+* `.nextflow.log` in the launch directory has the detailed log for the latest run.
+* `nextflow log` lists past runs; `nextflow log <run_name> -f name,status,exit,workdir` shows each task.
+* Each task has its own work directory with `.command.sh` (the script), `.command.log` and `.command.err` (output and errors). Nextflow prints the work directory of any task that fails.
 
-*  **`squeue -u $USER`**: Shows the status of your currently running and queued Slurm jobs.
-*  **`squeue --start -u $USER`**: Shows the estimated start time for your queued jobs.
-*  **`scontrol show job <JOBID>`**: Provides detailed information about a specific Slurm job (replace `<JOBID>` with the actual job ID). You can find the Slurm Job ID in the Nextflow execution output or by using `squeue`.
-*  **`sacct -u $USER -l`**: Shows information about past Slurm jobs.
+**Slurm commands**
 
-**Step 6.3: Slurm Job Output Files**
+* `squeue -u $USER`: your running and queued jobs. Nextflow task jobs are named `nf-<PROCESS>_(<tag>)`.
+* `squeue --start -u $USER`: estimated start times.
+* `scontrol show job <JOBID>`: details of one job.
+* `sacct -u $USER -l`: your past jobs.
+* `jobMonitor` (or `qstatMonitor`): an HPCC command that summarizes activity of all users on the cluster.
 
-By default, Slurm writes the standard output and standard error of each job to files named `slurm-<JOBID>.out`. These files are usually located in the directory where you submitted the Nextflow pipeline. Check these files for any error messages or output from your processes.
+## Tuning the pipeline for the HPCC
 
-**Step 6.4: `jobMonitor` or `qstatMonitor`**
+**Request resources per process.** Set `cpus`, `memory` and `time` on each process so each step asks for what it needs:
 
-The HPCC provides custom commands `jobMonitor` or `qstatMonitor` to summarize the activity of all users on the cluster. These can be helpful for getting an overview of cluster usage.
+```groovy
+process ALIGN {
+    cpus 8
+    memory '32 GB'
+    time '6h'
+    queue 'intel'        // optional: override the default partition
 
-### 7. Optimizing Your Pipeline for HPCC <a name="optimizing-your-pipeline-for-hpcc"></a>
+    input:
+    // ...
 
-To run your genomics pipelines efficiently on the HPCC, consider these optimization strategies:
+    output:
+    // ...
 
-**Step 7.1: Resource Requests in Processes**
-
-Define resource requests (CPU cores, memory, time) **within each `process`** in your Nextflow script. This allows for process-specific resource allocation and better utilization of cluster resources.
-
-**Example Process with Resource Requests:**
-
-```nextflow
-process my_process {
-  cpus 4     // Request 4 CPU cores
-  memory '8.GB'  // Request 8GB of memory
-  time '2h'    // Request 2 hours of wall time
-  queue 'intel'  // Optionally specify a queue (partition)
-
-  input:
-  // ...
-
-  output:
-  // ...
-
-  script:
-  // ...
+    script:
+    """
+    # use ${task.cpus} threads in your tool's command
+    """
 }
 ```
 
-If resource requests are not defined within a process, Nextflow will use default values, which might not be optimal for your specific tasks.
+Processes without these directives get Nextflow's defaults (1 CPU, no memory or time request), which on the HPCC means the partition defaults (1 GB, and 7 days on the CPU partitions).
 
-**Step 7.2: Use `seff` for Efficiency Analysis**
+**Check efficiency with `seff`.** After a task's job finishes, run `seff <JOBID>` to see CPU and memory efficiency. Lower the requests for steps that use much less than they ask for, keeping about 20% above the memory actually used.
 
-After a job completes, use the `seff <JOBID>` command (replace `<JOBID>` with your Slurm Job ID) to analyze resource utilization. `seff` provides information about CPU efficiency, memory efficiency, and job wall-clock time.
+**Pick the right partition per step.**
 
-```bash
-seff <JOBID>
-```
+* Memory-heavy steps: `queue 'highmem'` and `memory` of at least 100 GB.
+* GPU steps: `queue 'gpu'` and `clusterOptions '--gres=gpu:1'` (or a specific type, for example `--gres=gpu:a100:1`).
+* MPI steps: a homogeneous partition such as `batch` or `intel`, with `--ntasks` passed through `clusterOptions`.
 
-Analyze the `seff` output to identify processes that are underutilizing resources (e.g., low CPU or memory efficiency). Adjust your resource requests accordingly in your Nextflow script for future runs. It's recommended to request slightly more memory than actually used to account for variations in input data.
+**Parallelism.** Nextflow runs one task per item in a channel, in parallel, up to `executor.queueSize`. For multithreaded tools, set `cpus` and pass `${task.cpus}` to the tool's thread option.
 
-**Step 7.3: Choose the Right Partition**
-
-Select the most appropriate HPCC partition for each process based on its resource requirements and software compatibility. For example:
-
-*  For memory-intensive processes, use the `highmem` partition and request sufficient memory (>= 100GB).
-*  For GPU-accelerated tools, use the `gpu` partition and request the necessary number and type of GPUs using `--gres=gpu:<type>:<count>` in your process configuration (or in `nextflow.config` profile if applicable).
-*  For MPI-based applications, ensure you use a homogeneous partition like `batch` or `intel` and use the `--ntasks` option in your process configuration to request physical cores for MPI ranks.
-
-**Step 7.4: Parallelization Strategies**
-
-Nextflow inherently facilitates parallelization by processing data in parallel across available resources. Ensure your pipeline design leverages this:
-
-*  **Channel Operations:** Use Nextflow channels effectively to split and distribute data to processes for parallel execution.
-*  **Software Parallelization:** If your genomics tools support multi-threading or MPI, configure your processes to utilize these parallelization methods. Request the appropriate number of CPUs (`cpus` directive) for multi-threaded tools or use MPI execution within your scripts for MPI-enabled tools, requesting cores with `--ntasks` and using `mpirun` or `srun`.
-
-**Step 7.5: Caching and Resuming**
-
-Nextflow's caching mechanism can significantly speed up pipeline re-runs. By default, Nextflow caches process execution results. If you re-run a pipeline with the same input and code, Nextflow will reuse cached results, skipping re-execution of processes.
-
-Use the `-resume` option when re-running pipelines to leverage caching and resume from where a previous run left off.
+**Caching and resume.** Nextflow caches each task's results in the work directory. Re-running with `-resume` skips tasks whose inputs and code have not changed:
 
 ```bash
 nextflow run main.nf -profile slurm -resume
 ```
 
-### 8. Getting Help and Resources <a name="getting-help-and-resources"></a>
+Keep the work directory until the pipeline is final, then delete it to free space.
 
-If you encounter issues or have further questions, here are valuable resources:
+## Getting help
 
-*  **UCR Research Computing Support:**
-  *  **Email:** research-computing@ucr.edu
-  *  **Slack:** [https://ucr-research-compute.slack.com/](https://ucr-research-compute.slack.com/) (Request access if you are not already a member).
-
-*  **UCR HPCC Documentation:** Refer to this knowledge base article and other documentation provided by UCR Research Computing for information about the HPCC cluster, Slurm, available software modules, and usage guidelines.
-*  **Nextflow Documentation:** The official Nextflow documentation is comprehensive and a great resource for learning Nextflow concepts, DSL, and features: [https://www.nextflow.io/docs/](https://www.nextflow.io/docs/)
-*  **UCR Research Computing GitHub:** Explore the UCR Research Computing GitHub repository for useful notebooks and examples related to HPC and Nextflow (as mentioned in the provided facts).
-
-By following this guide and utilizing the available resources, you should be well-equipped to create and run your genomics Nextflow pipelines efficiently on the UCR HPCC cluster. Happy computing!
-
-**Contact us for help or to learn more!**
-
-*  Email: research-computing@ucr.edu
-*  UCR Research Computing Slack: [https://ucr-research-compute.slack.com/](https://ucr-research-compute.slack.com/)
+* HPCC accounts, the cluster, software and modules: support@hpcc.ucr.edu
+* Other Research Computing questions: research-computing@ucr.edu
+* UCR Research Computing Slack: [https://ucr-research-compute.slack.com/](https://ucr-research-compute.slack.com/) (ask research-computing@ucr.edu for an invitation)
+* HPCC Slurm examples: [github.com/ucr-hpcc/hpcc_slurm_examples](https://github.com/ucr-hpcc/hpcc_slurm_examples)
+* Nextflow documentation: [https://www.nextflow.io/docs/](https://www.nextflow.io/docs/), including the [Slurm executor](https://www.nextflow.io/docs/latest/executor.html) page
