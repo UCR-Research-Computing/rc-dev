@@ -18,6 +18,8 @@ Command-line tools such as `rclone` are the fastest way to move large amounts of
 
 CephRDS uses the S3 protocol, so you need an S3-compatible graphical client. You also need your CephRDS Access Key ID and Secret Access Key; see [KB013: Connecting to CephRDS](../kb013-cephrds-onboarding/) for how to request them.
 
+**Network:** CephRDS is reachable from the campus network only. Off campus, connect to the [UCR campus VPN](https://vpn.ucr.edu/) (Cisco Secure Client) first.
+
 ## Mac and Windows: Cyberduck
 
 [Cyberduck](https://cyberduck.io/) is an open-source graphical client for macOS and Windows that Research Computing suggests for CephRDS.

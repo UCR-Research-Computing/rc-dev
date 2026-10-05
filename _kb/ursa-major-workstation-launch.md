@@ -4,9 +4,9 @@ topic: Cloud
 owner: Research Computing
 reviewed: 2026-10-04
 review_notes:
+  - "Chuck 2026-10-04: us-central1 is the Ursa Major default region."
   - "Added Tier 2 recharge note (workstations and GPUs), the pre-October 2026 workstation note, the TPU/Arm Tier 1 pointer and a set-a-budget step."
   - "Updated console steps and the gcloud example: CentOS is end of life, so examples use Debian/Ubuntu; GPU example adds --maintenance-policy=TERMINATE (required for GPU VMs); fixed the disk flag text (boot disk size, not added storage)."
-  - "CHECK: the example zone (us-west2-b) and machine type are sensible defaults for Ursa Major projects."
 redirect_from:
   - /Knowledge_Base/Ursa_Major_Research_Workstations_How_to_Launch.html
 ---
@@ -28,11 +28,11 @@ This guide shows how to create a research workstation (a Compute Engine VM) in y
 2. Select your project in the project picker at the top of the page.
 3. Open the navigation menu and select **Compute Engine**, then **VM instances**.
 4. Click **Create instance**.
-5. **Name, region and zone:** give the VM a name and choose a region and zone. A region near you (for example `us-west2`, Los Angeles) keeps connections responsive.
+5. **Name, region and zone:** give the VM a name and choose a region and zone. Use `us-central1` (Iowa), the Ursa Major default, unless your work needs another region.
 6. **Machine configuration:** choose a machine family and type (CPU count and memory). For GPUs, choose the **GPUs** machine family and pick a GPU type and count. Not every GPU is offered in every zone.
 7. **OS and storage:** click **Change** to pick the operating system (for example Debian, Ubuntu, Rocky Linux or Windows Server) and the boot disk size and type.
 8. **Additional disks (optional):** under storage, add a new persistent disk if you want data kept separate from the boot disk. Disks are charged while they exist, even when the VM is stopped.
-9. **Networking:** review firewall and network settings. Do not open SSH or RDP to the whole internet. See [Connecting to an Ursa Major research workstation](../ursa-major-workstation-connect/).
+9. **Networking:** review firewall and network settings. A public IP address is available by request to research-computing@ucr.edu. Do not open SSH or RDP to the whole internet. See [Connecting to an Ursa Major research workstation](../ursa-major-workstation-connect/).
 10. Review the monthly estimate shown on the page, then click **Create**.
 
 ## Command line (gcloud)
@@ -49,7 +49,7 @@ This guide shows how to create a research workstation (a Compute Engine VM) in y
 
    ```bash
    gcloud compute instances create my-workstation \
-       --zone=us-west2-b \
+       --zone=us-central1-a \
        --machine-type=e2-standard-4 \
        --image-family=debian-12 \
        --image-project=debian-cloud \

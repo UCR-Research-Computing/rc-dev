@@ -8,10 +8,9 @@ owner: Research Computing
 redirect_from:
   - /Knowledge_Base/KB016_Secure_Enclave_Data_Ingress.html
 review_notes:
+  - "Chuck 2026-10-04: access path and key escrow confirmed."
   - "Removed an internal host name and the claim that data never touches any network; described the transfer path in general terms and pointed to the project's DSP and training for the exact steps, consistent with KB014 and KB015."
   - "Rewrote the decryption section generically: the earlier text said providers such as NIH phone a passphrase to a named role, which may not match how dbGaP issues decryption keys."
-  - "CHECK: the access path (bastion host with UCR SSO and Duo, then a transfer node inside the enclave) still matches the current enclave design."
-  - "CHECK: how decryption keys or passphrases are received and escrowed (UISL role, approved password manager) matches current practice and the DSP template."
 ---
 
 These rules apply to projects in the [secure research enclave](../../services/secure-enclave/). The project's data security plan (DSP) and the mandatory enclave training set the exact steps for each project. Where they differ from this summary, the DSP applies. See [KB014](../kb014-secure-enclave-guide/) for an overview of the enclave and [KB015](../kb015-secure-enclave-onboarding-checklist/) for onboarding.

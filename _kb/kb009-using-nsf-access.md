@@ -8,9 +8,9 @@ owner: Research Computing
 redirect_from:
   - /Knowledge_Base/KB009_Using_NSF_ACCESS.html
 review_notes:
+  - "Chuck 2026-10-04: Research Computing remains UCR ACCESS Campus Champion."
   - "Removed the ACCESS credit limits from the project-type table and the SU sizing section; the article now links the ACCESS project types page for current limits. Checked the remaining ACCESS steps, policies and Jetstream2 flavors, SU rates, state charges and default storage against access-ci.org and docs.jetstream-cloud.org on 2026-10-04."
   - "Added links to the NSF ACCESS, Nautilus and NAIRR service pages and the ACCESS resource list, a row pointing cloud VMs on Google Cloud to Ursa Major Tier 2, and a Research Computing contact."
-  - "CHECK: Research Computing staff are currently registered as ACCESS Campus Champions for UCR."
   - "CHECK: the Exosphere sign-in steps (Add ACCESS account, then ACCESS CI (XSEDE) at CILogon) still match the current Jetstream2 interface."
 ---
 
@@ -196,4 +196,4 @@ A running VM uses SUs even when nobody is logged in.
 * **ACCESS allocations guide:** [Get Your First Project](https://allocations.access-ci.org/get-your-first-project)
 * **Research Computing:** research-computing@ucr.edu. We can look over a request with you or help you choose between ACCESS and campus options.
 
-**Campus Champions:** the UCR Research Computing team acts as UCR's ACCESS Campus Champions.
+**Campus Champions:** Research Computing is UCR's ACCESS Campus Champion. Contact research-computing@ucr.edu for help with an ACCESS request.

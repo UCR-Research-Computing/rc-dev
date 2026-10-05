@@ -4,9 +4,9 @@ topic: Storage
 owner: Research Computing
 reviewed: 2026-10-04
 review_notes:
+  - "Chuck 2026-10-04: us-central1 is the Ursa Major default region."
   - "Updated console steps (Cloud Storage, Buckets, Create) and replaced the legacy gsutil mb command with gcloud storage buckets create, with project, location, storage class, uniform access and public access prevention."
   - "Added tier context for storage classes: Standard and other active classes are Tier 2 recharge; Coldline/Archive are Tier 1 under current terms, with retrieval charges."
-  - "CHECK: the suggested default location (us-west2, Los Angeles) suits Ursa Major projects, or name the region Research Computing prefers."
 redirect_from:
   - /Knowledge_Base/Ursa_Major_Research_Storage_How_to_Create_Bucket.html
 ---
@@ -30,7 +30,7 @@ See [KB005: Ursa Major service tiers](../kb005-ursa-major-service-tiers/) and Go
 2. Open the navigation menu and select **Cloud Storage**, then **Buckets**.
 3. Click **Create**.
 4. **Name:** enter a name. Bucket names are globally unique across all of Google Cloud, so include something specific to your lab (for example `my-lab-bucket`). Do not put sensitive information in the name.
-5. **Location:** choose where the data is stored. A single region near your users (for example `us-west2`) is usually enough.
+5. **Location:** choose where the data is stored. Use the single region `us-central1` (Iowa), the Ursa Major default, unless your work needs another region.
 6. **Storage class:** choose a default class (see above).
 7. **Access control:** keep **Prevent public access** on and choose **Uniform** access control.
 8. Click **Create**.
@@ -50,7 +50,7 @@ Use the [Google Cloud CLI](https://cloud.google.com/sdk/docs/install), or [Cloud
 
    ```bash
    gcloud storage buckets create gs://my-lab-bucket \
-       --location=us-west2 \
+       --location=us-central1 \
        --default-storage-class=STANDARD \
        --uniform-bucket-level-access \
        --public-access-prevention

@@ -4,16 +4,16 @@ topic: Storage
 owner: Research Computing
 reviewed: 2026-10-04
 review_notes:
+  - "Chuck 2026-10-04: CephRDS does not support auto-delete rules."
   - "Removed the duplicate H1 and marketing intro; updated the console steps to current S3 labels (rule scope, 'Expire current versions of objects', Create rule)."
   - "Added versioned-bucket handling, a CLI example, a warning that expiration is permanent, and links to AWS docs and the Cloud accounts service page."
-  - "CHECK: whether CephRDS supports S3 lifecycle expiration rules for labs; the article only says to ask Research Computing."
 redirect_from:
   - /Knowledge_Base/how-to-s3-auto-migrate-delete.html
 ---
 
 An Amazon S3 lifecycle rule can delete objects automatically after a set number of days, or move them to a cheaper storage class. This helps you follow a data retention plan and avoid paying to store data you no longer need. This article covers the deletion (expiration) rule.
 
-UCR researchers get AWS accounts through ITS under the University of California agreements; see [Cloud accounts](../../services/cloud-accounts/). For on-campus S3 storage, see [CephRDS](../../services/cephrds/), and ask research-computing@ucr.edu whether lifecycle rules can be applied to your CephRDS bucket.
+UCR researchers get AWS accounts through ITS under the University of California agreements; see [Cloud accounts](../../services/cloud-accounts/). This article is for Amazon S3. [CephRDS](../../services/cephrds/), the on-campus S3 storage, does not support automatic deletion (lifecycle) rules; delete data there yourself when your retention period ends.
 
 **Expiration is permanent.** Once a rule deletes an object, it cannot be recovered unless you keep another copy. Check the rule's scope carefully, and check your data retention obligations (funder, journal, and UC records rules; see [Records retention](../../security/records-retention/)) before you set one.
 
