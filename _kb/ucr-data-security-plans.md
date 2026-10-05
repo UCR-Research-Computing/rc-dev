@@ -6,11 +6,10 @@ redirect_from:
   - /Knowledge_Base/UCR_Data_Security_Plans.html
 reviewed: 2026-10-04
 review_notes:
+  - "Chuck 2026-10-04: DSP template current; CHASS server room option removed (no longer offered)."
   - "Reworded the secure enclave section to match KB014 and the enclave service page (designed to support NIST SP 800-171 / CMMC Level 2 work, after review, an approved DSP and training; ITS covers the shared infrastructure, project usage and admin fees are recharged)."
   - "Added a pointer to campus policy (UC IS-3) through the Security hub, a HIPAA pointer to KB006, and fixed the broken Next steps list."
   - "Removed 'compliance' framing and softened the workstation statement to what Research Computing supports."
-  - "CHECK: the Google Doc DSP template link is still the current official template and is shared for UCR access."
-  - "CHECK: the CHASS server room option is still offered and still limited to CHASS researchers."
 ---
 
 Research with highly sensitive data needs formal planning and approval before it starts. This includes P3 or P4 data, protected health information (HIPAA), data regulated under NIST SP 800-171 Rev 2, export-controlled data, and datasets governed by strict data use agreements (DUAs). The governing rules are University of California policy, in particular UC IS-3, plus any external regulations or agreements that apply to the data. The [Security and Data](../../security/) page lists the policies and links to the official sources; where this article and a policy differ, the policy wins.
@@ -58,14 +57,11 @@ The DUA and the data classification decide which environment is appropriate. Sta
 
 For sensitive research data classified as P3 or P4 without federal NIST SP 800-171 or CMMC requirements:
 
-*   **Option 1: Google Cloud (Ursa Major, Tier 2 recharge)**
+*   **Google Cloud (Ursa Major, Tier 2 recharge)**
     *   **Availability:** UCR researchers.
     *   **Description:** a dedicated project in the Ursa Major Google Cloud organization, isolated from other projects, configured to the controls in the DSP. It does not include the additional monitoring and audit logging of the secure research enclave.
     *   **Cost:** recharged to a lab funding source (COA) under an MOU. See [KB005](../kb005-ursa-major-service-tiers/) and [KB007](../kb007-tier2-recharge-workflow/).
 
-*   **Option 2: On-premises hosting (CHASS server room)**
-    *   **Availability:** limited to researchers in the College of Humanities, Arts, and Social Sciences (CHASS).
-    *   **Description:** physical server hosting in the secured CHASS data center.
 
 Clinical data and HIPAA applications follow a different path. See [KB006: Clinical and HIPAA applications](../kb006-som-clinical-apps/).
 

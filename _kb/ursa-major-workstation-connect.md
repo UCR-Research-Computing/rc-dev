@@ -4,9 +4,9 @@ topic: Cloud
 owner: Research Computing
 reviewed: 2026-10-04
 review_notes:
+  - "Chuck 2026-10-04: public IPs and SSH are allowed by request."
   - "Rewrote the console SSH steps (SSH button in VM instances), the RDP section (Windows password reset, IAP tunnel instead of opening port 3389 to the internet) and the gcloud section (added --tunnel-through-iap for VMs without an external IP). Removed padding text."
   - "Added Tier 2 recharge note, the pre-October 2026 workstation note, and a reminder to stop idle VMs."
-  - "CHECK: whether Ursa Major projects allow external IPs or require IAP for SSH/RDP, so the default advice matches the project network setup."
 redirect_from:
   - /Knowledge_Base/Ursa_Major_Research_Workstations_How_to_Connect.html
 ---
@@ -16,6 +16,8 @@ This guide shows how to connect to a research workstation (a Compute Engine VM) 
 **Costs:** research workstations are Tier 2. They are recharged to a lab funding source under an MOU. A running VM is charged whether or not you are connected, so stop it when you are done. See [Ursa Major research workstations](../ursa-major-research-workstations/) and [KB005: Ursa Major service tiers](../kb005-ursa-major-service-tiers/).
 
 **Workstations set up before October 2026:** some were set up under the earlier tiers, when workstations were not recharged. If your lab has one, contact [research-computing@ucr.edu](mailto:research-computing@ucr.edu). Nothing changes without that conversation.
+
+**External IP addresses:** a public IP address and direct SSH or RDP access are available by request to [research-computing@ucr.edu](mailto:research-computing@ucr.edu). Without one, connect through the console or an Identity-Aware Proxy (IAP) tunnel as shown below.
 
 ## SSH from the web console (Linux VMs)
 
@@ -41,7 +43,7 @@ This guide shows how to connect to a research workstation (a Compute Engine VM) 
    gcloud compute ssh INSTANCE_NAME --zone=ZONE
    ```
 
-   Replace `INSTANCE_NAME` with the VM name and `ZONE` with its zone (for example `us-west2-b`). The first time, gcloud creates an SSH key for you.
+   Replace `INSTANCE_NAME` with the VM name and `ZONE` with its zone (for example `us-central1-a`). The first time, gcloud creates an SSH key for you.
 
 4. If the VM has no external IP address, connect through Identity-Aware Proxy (IAP):
 

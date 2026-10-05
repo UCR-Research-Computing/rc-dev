@@ -9,7 +9,6 @@ review_notes:
   - "Fixed the macFUSE link (macfuse.github.io), noted that Homebrew rclone cannot mount on macOS, and added unmount commands and --log-file for --daemon."
   - "Toned down claims ('exactly like a local drive', 'maximum performance'); added limits of S3 mounts; used a placeholder bucket name."
   - "Corrected the remote setup: provider Ceph, and pointed to KB013 for the full prompts. Added a link and a third-party caveat for RcloneView."
-  - "CHECK: RcloneView (rcloneview.com) is a third-party product; confirm Research Computing is happy to mention it."
 redirect_from:
   - /Knowledge_Base/KB020_CephRDS_Mounting_Folders.html
 ---
@@ -17,6 +16,8 @@ redirect_from:
 Graphical clients such as Cyberduck ([KB019](../kb019-cephrds-gui-clients/)) are good for moving files. Sometimes you want your CephRDS bucket to appear as a folder or drive instead, so applications (Word, Python, R) can open and save files in it directly.
 
 This article explains how to mount a CephRDS bucket as a local drive on Linux, macOS and Windows with **rclone**.
+
+**Network:** CephRDS is reachable from the campus network only. Off campus, connect to the [UCR campus VPN](https://vpn.ucr.edu/) (Cisco Secure Client) first.
 
 ## Before you start: what a mount can and cannot do
 

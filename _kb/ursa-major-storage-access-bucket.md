@@ -4,10 +4,10 @@ topic: Storage
 owner: Research Computing
 reviewed: 2026-10-04
 review_notes:
+  - "Chuck 2026-10-04: bucket sharing is done by Research Computing on request; removed the self-service steps."
   - "Replaced the legacy gsutil commands with gcloud storage (Google now marks gsutil as legacy) and the object ACL sharing example with bucket IAM, which also works with uniform bucket-level access."
   - "Rewrote the console sharing steps: the old Viewer/Commenter/Editor 'Share' dialog and public/private upload options described Google Drive, not Cloud Storage. Added a warning against public access."
   - "Added tier context: Standard storage is Tier 2 recharge, archive classes are Tier 1; data movement out of Google Cloud can carry charges."
-  - "CHECK: whether Ursa Major projects allow lab members to grant bucket roles to people outside the project, or whether that request goes through Research Computing."
 redirect_from:
   - /Knowledge_Base/Ursa_Major_Research_Storage_How_to_Access_Bucket.html
 ---
@@ -41,15 +41,7 @@ For large uploads (many files or many gigabytes), the command line is more relia
 
 ### Share access
 
-Cloud Storage shares access by granting a role to a person or group, not by sending a link.
-
-1. Open the bucket and select the **Permissions** tab.
-2. Click **Grant access**.
-3. Enter the person's or group's email address.
-4. Choose a role, for example **Storage Object Viewer** (read only) or **Storage Object User** (read and write).
-5. Click **Save**.
-
-The person can then open the bucket in the console or with the command line. Grant the smallest role that does the job, and remove access when it is no longer needed. Do not make buckets or objects public.
+Cloud Storage shares access by granting a role to a person or group, not by sending a link. To give someone access to a bucket, including collaborators outside the project or outside UCR, send a request to [research-computing@ucr.edu](mailto:research-computing@ucr.edu) with the bucket name, the person's email address and whether they need read-only or read and write access. Research Computing grants the smallest role that does the job, and removes it when it is no longer needed. Buckets and objects are not made public.
 
 ## Command line (gcloud)
 
@@ -87,13 +79,6 @@ The person can then open the bucket in the console or with the command line. Gra
    gcloud storage cp gs://my-lab-bucket/myfile.txt ~/Downloads/
    ```
 
-7. Give a colleague read access to the bucket:
-
-   ```bash
-   gcloud storage buckets add-iam-policy-binding gs://my-lab-bucket \
-       --member=user:colleague@ucr.edu \
-       --role=roles/storage.objectViewer
-   ```
 
    Replace `my-lab-project`, `my-lab-bucket` and the email address with your own values.
 

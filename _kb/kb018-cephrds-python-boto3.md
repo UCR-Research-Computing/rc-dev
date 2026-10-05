@@ -6,10 +6,10 @@ audience: "UCR Faculty, Postdocs, Researchers & Students"
 reviewed: 2026-10-04
 owner: Research Computing
 review_notes:
+  - "Chuck 2026-10-04: CephRDS needs the campus network or VPN."
   - "Replaced 'fully compatible' with 'S3-compatible'; the example now reads keys from environment variables instead of hardcoding them."
   - "Added download, pagination and error handling to the example; used a placeholder bucket name."
   - "CHECK: path-style addressing is still the recommended setting for rds.ucr.edu (bucket subdomains also resolve in DNS)."
-  - "CHECK: whether rds.ucr.edu is reachable off campus without VPN (port 443 did not answer from an outside test host on 2026-10-04)."
 redirect_from:
   - /Knowledge_Base/KB018_CephRDS_Python_boto3.html
 ---
@@ -84,7 +84,7 @@ print("Download complete.")
 
 - **`AccessDenied` or `InvalidAccessKeyId`:** check that the environment variables hold the right keys and that your key has access to that bucket.
 - **`NoSuchBucket`:** check the bucket name spelling. Bucket names are case-sensitive.
-- **Connection timeouts:** CephRDS may only be reachable from the campus network. If you are off campus, try the campus VPN. Contact research-computing@ucr.edu if the problem continues.
+- **Connection timeouts:** CephRDS is reachable only from the campus network. Off campus, connect to the [UCR campus VPN](https://vpn.ucr.edu/) (Cisco Secure Client) first. Contact research-computing@ucr.edu if the problem continues.
 
 ## Security note
 

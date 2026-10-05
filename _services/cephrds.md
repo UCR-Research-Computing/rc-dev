@@ -20,9 +20,11 @@ not_fit:
   - Real-time document collaboration (use Google Drive)
   - Scratch space for running jobs (use HPCC storage)
   - Use cases that need a fixed long-term capacity commitment during the pilot
+  - Mounting as a network drive over NFS or SMB (S3 access only)
+  - Automatic deletion (lifecycle) rules
 glance:
   - {k: "Who can use it", v: "UCR faculty and staff, allocated by project"}
-  - {k: "Access", v: "S3-compatible API, with tools such as rclone and Cyberduck"}
+  - {k: "Access", v: "S3-compatible API only, from the campus network or VPN"}
   - {k: "Rental", fact: cephrds_rent}
   - {k: "Purchase", fact: cephrds_purchase}
   - {k: "Data allowed", v: "P1 and P2"}

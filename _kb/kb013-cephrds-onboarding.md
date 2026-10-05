@@ -6,24 +6,24 @@ audience: "Researchers, PIs, Students"
 reviewed: 2026-10-04
 owner: Research Computing
 review_notes:
+  - "Chuck 2026-10-04: S3 only for now; campus network or VPN only."
   - "Removed a staff name and internal team routing; described the request process instead of promising outcomes."
   - "Added pilot status, P1-P2 data limit and costs via the cephrds_rent / cephrds_purchase facts; removed price-claim wording."
   - "Replaced the duplicated Python script with a short example and a link to KB018; used placeholder bucket names."
-  - "CHECK: whether CephRDS offers NFS access to labs; the article now says access is over S3 and to ask about other protocols."
-  - "CHECK: how keys are delivered (the old text said a ServiceNow response) and whether rclone is a module on the HPCC (module load rclone)."
 redirect_from:
   - /Knowledge_Base/KB013_CephRDS_Onboarding.html
 ---
 
 ## Overview
 
-CephRDS is Research Computing's on-premises research data storage, built on Ceph. Labs reach their buckets through an S3-compatible interface, so you use an S3 client rather than mapping a network drive. If your work needs a different access method, ask Research Computing.
+CephRDS is Research Computing's on-premises research data storage, built on Ceph. Labs reach their buckets through an S3-compatible interface only, so you use an S3 client rather than mapping a network drive. Other access methods, such as NFS, are not offered at this time.
 
 This article covers how to request storage and keys, and how to connect to the CephRDS endpoint (`https://rds.ucr.edu`) with Cyberduck (graphical), rclone (command line) and Python.
 
 Before you request storage, note:
 
 - **Pilot service.** CephRDS is in pilot. Capacity is limited, terms may change, and each request is reviewed individually. See [CephRDS](../../services/cephrds/).
+- **Network.** CephRDS is reachable from the campus network only. Off campus, connect to the [UCR campus VPN](https://vpn.ucr.edu/) (Cisco Secure Client) first.
 - **Data allowed.** P1 and P2 data only. Do not store P3 or P4 data on CephRDS.
 - **Costs.** Pilot rates are {% include fact.html id="cephrds_rent" %} for rented capacity, or {% include fact.html id="cephrds_purchase" bare=true %} for purchased capacity. The terms set out when your storage is allocated are the ones that apply. See [Costs](../../costs/).
 
