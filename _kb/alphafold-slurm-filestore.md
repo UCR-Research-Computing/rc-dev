@@ -2,174 +2,154 @@
 title: "AlphaFold on a Slurm cluster with Google Cloud Filestore"
 topic: Cloud
 owner: Research Computing
+reviewed: 2026-10-04
+review_notes:
+  - "Added tier context (a lab's own cluster, GPUs and Filestore are Tier 2 recharge; Filestore is charged for provisioned capacity even when idle) and a pointer to the AlphaFold module on the HPCC."
+  - "Fixed commands: aria2 package name (was aria2c), Filestore tier PREMIUM is a legacy alias so the example uses BASIC_SSD, placeholder Filestore IP, dropped the obsolete intr mount option, moved GPU Name/Type to gres.conf (they are not slurm.conf node parameters), and lowered --mem to 120G so it fits a node with RealMemory=128000."
+  - "Replaced the string-plus-eval job command with a direct apptainer exec call; flags and database paths checked against the AlphaFold 2 repository (run_docker.py) on 2026-10-04."
+  - "CHECK: the T4 example GPU is enough for the protein sizes your users run; AlphaFold's own testing used A100s."
 redirect_from:
   - /Knowledge_Base/AlphaFold_Slurm_Filestore_Guide.html
 ---
 
-This guide outlines the process for setting up and running AlphaFold in a high-performance computing (HPC) environment using Slurm as the workload manager and Google Cloud Filestore for shared, high-performance storage.
+This guide shows one way to run AlphaFold 2 on a lab's own Slurm cluster in Google Cloud, with the genetic databases on a shared Google Cloud Filestore (NFS) instance. It is written for whoever administers the cluster (Phases 1 and 2) and for the researchers who run predictions (Phase 3).
 
-### High-Level Architecture
+## Before you start
 
-1.  **Shared Filesystem (Google Cloud Filestore):** A single, high-performance NFS share will host the AlphaFold genetic databases (~3 TB) and the AlphaFold software itself. All nodes in the cluster will mount this share.
-2.  **Slurm Cluster:** A workload manager that schedules jobs. We will configure it to be aware of a "GPU partition."
-3.  **GPU Partition:** A logical grouping of compute nodes within Slurm that are equipped with GPUs. When a user requests a GPU for their job, Slurm will direct it to one of these nodes.
-4.  **Execution Model:** Each AlphaFold prediction will be submitted as a separate job to Slurm. The job will request one node, a set number of CPUs, and one GPU from the GPU partition.
+- **Try the HPCC first.** The campus [HPCC cluster](../../services/hpcc/) offers AlphaFold as a module, with databases already downloaded. See the HPCC's [AlphaFold usage page](https://hpcc.ucr.edu/manuals/hpc_cluster/selected_software/alphafold/). For most labs this is the simpler and lower-cost path.
+- **Costs.** A lab's own cluster in its Ursa Major project is Tier 2: compute nodes, GPUs, disks and Filestore are recharged to a lab funding source under an MOU. Filestore is charged for its provisioned capacity the whole time it exists, whether or not jobs are running. See [KB005: Ursa Major service tiers](../kb005-ursa-major-service-tiers/), Google's [Filestore pricing](https://cloud.google.com/filestore/pricing) and [GPU pricing](https://cloud.google.com/compute/gpus-pricing).
+- **Building the cluster.** See [Launching an Ursa Major HPC cluster](../ursa-major-cluster-launch/). Cluster Toolkit blueprints can create and mount a Filestore instance for you, which can replace step 1 below. [Talk to Research Computing](../../help/) before you build.
 
----
+## Architecture
 
-### Phase 1: One-Time Infrastructure Setup
+1. **Shared file system (Filestore):** one NFS share holds the AlphaFold databases (about 2.6 TB unpacked for the full set), the software and the container image. Every node mounts it.
+2. **Slurm:** schedules the jobs.
+3. **GPU partition:** a group of GPU nodes. Jobs that ask for a GPU are sent there.
+4. **Execution model:** each prediction is a separate Slurm job that asks for one node, a set number of CPUs and one GPU.
 
-This is the foundational work done by a system administrator.
+## Phase 1: One-time setup (administrator)
 
-#### 1. Provision and Mount Google Cloud Filestore
+### 1. Create and mount the Filestore instance
 
-First, create a high-performance Filestore instance. For the MSA search stage, a higher-tier instance is recommended.
+The database search (MSA) stage reads heavily from the databases, so an SSD tier is recommended. Basic SSD instances start at 2.5 TiB.
 
 ```bash
-# Example: Create a 4TB Premium Filestore instance
+# Example: a 4 TB Basic SSD Filestore instance
 gcloud filestore instances create alphafold-data \
-    --project=your-gcp-project \
+    --project=my-lab-project \
     --zone=us-central1-a \
-    --tier=PREMIUM \
+    --tier=BASIC_SSD \
     --file-share=name=alphafold_share,capacity=4TB \
     --network=name="default"
+
+# Show the instance's IP address
+gcloud filestore instances describe alphafold-data \
+    --zone=us-central1-a --format="value(networks[0].ipAddresses[0])"
 ```
 
-Next, mount this Filestore instance on **all Slurm nodes** (both head node and compute nodes). This is typically done via `/etc/fstab` for persistence.
+Put the Filestore instance in the same zone and network as the cluster. Then mount it on **all Slurm nodes** (login, controller and compute):
 
 ```bash
-# 1. Create a mount point
+# 1. Install the NFS client (nfs-common on Debian/Ubuntu, nfs-utils on Rocky Linux)
+sudo apt-get install -y nfs-common
+
+# 2. Create a mount point
 sudo mkdir -p /slurm/shared/alphafold
 
-# 2. Mount the share (get the IP from the gcloud command output)
-sudo mount 10.0.0.2:/alphafold_share /slurm/shared/alphafold
+# 3. Mount the share (replace FILESTORE_IP with the address from above)
+sudo mount FILESTORE_IP:/alphafold_share /slurm/shared/alphafold
 
-# 3. Add to /etc/fstab to make it permanent
-# (Entry in /etc/fstab)
-# 10.0.0.2:/alphafold_share    /slurm/shared/alphafold   nfs   defaults,_netdev,hard,intr,actimeo=600 0 0
+# 4. To mount at boot, add this line to /etc/fstab
+# FILESTORE_IP:/alphafold_share  /slurm/shared/alphafold  nfs  defaults,_netdev,hard,actimeo=600  0 0
 ```
 
-#### 2. Download AlphaFold Databases
+On autoscaling clusters, compute nodes are created and deleted as needed, so put the mount in the node image or startup script (or let the Cluster Toolkit blueprint handle it) rather than editing each node by hand.
 
-On one of the nodes (e.g., the Slurm head node), download the databases **directly onto the mounted Filestore share**. This will take a very long time.
+### 2. Download the AlphaFold databases
+
+On one node (for example the login node), download the databases directly onto the Filestore share. This takes many hours.
 
 ```bash
-# Install aria2c if you haven't already
-sudo apt-get update && sudo apt-get install -y aria2c
+# Install aria2 (provides the aria2c downloader)
+sudo apt-get update && sudo apt-get install -y aria2
 
-# Clone the AlphaFold repo to get the download script
+# Clone the AlphaFold repository to get the download scripts
 git clone https://github.com/google-deepmind/alphafold.git /slurm/shared/alphafold/software/
 
-# Run the download script, pointing to a directory on the Filestore mount
+# Download all databases and model parameters to the Filestore share
 /slurm/shared/alphafold/software/scripts/download_all_data.sh /slurm/shared/alphafold/databases/
 ```
 
-#### 3. Install AlphaFold Software (via Apptainer/Singularity)
+The model parameters are under the CC BY 4.0 license and the code under Apache 2.0. See the [AlphaFold repository](https://github.com/google-deepmind/alphafold) for license terms and the reduced database option.
 
-We will use Apptainer (formerly Singularity), which is more secure and standard for HPC/Slurm environments than Docker.
+### 3. Build the container (Apptainer)
+
+Apptainer (formerly Singularity) is the usual container runtime on Slurm clusters, because it runs as the user rather than as root.
 
 ```bash
-# On a machine with Docker and Apptainer installed:
-# 1. Navigate to the AlphaFold source directory
+# On a machine with both Docker and Apptainer installed:
 cd /slurm/shared/alphafold/software/
 
-# 2. Build the Docker image first
+# 1. Build the Docker image
 docker build -f docker/Dockerfile -t alphafold .
 
-# 3. Convert the Docker image to an Apptainer image file (.sif)
-# This file will be stored on the shared Filestore drive
+# 2. Convert it to an Apptainer image file (.sif) on the shared drive
+mkdir -p /slurm/shared/alphafold/containers
 apptainer build /slurm/shared/alphafold/containers/alphafold.sif docker-daemon:alphafold:latest
 ```
 
----
+## Phase 2: Slurm configuration (administrator)
 
-### Phase 2: Slurm Configuration (Admin Task)
-
-The Slurm administrator needs to define the GPU resources in `slurm.conf`.
+Slurm needs to know about the GPUs. If the cluster was built with Cluster Toolkit, it generates this configuration from the blueprint; check the generated files rather than editing them by hand. For a hand-built cluster, the relevant lines look like this:
 
 ```ini
-# Example snippet from /etc/slurm/slurm.conf
-
-# Define the generic resources (GPUs) available on the nodes
+# /etc/slurm/slurm.conf (excerpt)
 GresTypes=gpu
-NodeName=gpu-node-[01-04] Name=gpu Type=t4 CPUs=16 RealMemory=128000 Gres=gpu:t4:1 State=UNKNOWN
-
-# Define the GPU partition
+NodeName=gpu-node-[01-04] CPUs=16 RealMemory=128000 Gres=gpu:t4:1 State=UNKNOWN
 PartitionName=gpu_partition Nodes=gpu-node-[01-04] Default=NO MaxTime=72:00:00 State=UP
+
+# /etc/slurm/gres.conf on the GPU nodes
+NodeName=gpu-node-[01-04] Name=gpu Type=t4 File=/dev/nvidia0
 ```
 
----
+## Phase 3: Running a prediction (researcher)
 
-### Phase 3: Running a Prediction (User Workflow)
+### 1. Prepare the input
 
-This is the process a researcher follows to predict a protein structure.
+Put your FASTA file (for example `my_protein.fasta`) in your home directory or another directory on a shared file system that every node can see.
 
-#### 1. Prepare Input
+### 2. Create a Slurm job script
 
-Place your FASTA file (e.g., `my_protein.fasta`) in your user directory, which should also be on a shared filesystem.
-
-#### 2. Create a Slurm Submission Script
-
-Create a file named `run_alphafold.sbatch`. This script tells Slurm exactly what resources you need and what commands to run.
+Create a file named `run_alphafold.sbatch`:
 
 ```bash
 #!/bin/bash
-
-#=======================================================================
-# Slurm SBATCH Directives
-#=======================================================================
-# Job name
 #SBATCH --job-name=alphafold_prediction
-# # Standard output and error log
 #SBATCH --output=slurm-%j.out
-# # Partition (queue) to submit to
 #SBATCH --partition=gpu_partition
-# # Request one node
 #SBATCH --nodes=1
-# # Request one task (process)
 #SBATCH --ntasks=1
-# # Request 16 CPU cores for the task
 #SBATCH --cpus-per-task=16
-# # Request 128GB of memory
-#SBATCH --mem=128gb
-# # Request 1 GPU of any type
+#SBATCH --mem=120G            # must fit within the node's RealMemory
 #SBATCH --gres=gpu:1
-# # Job time limit
 #SBATCH --time=24:00:00
 
-#=======================================================================
-# Job Execution
-#=======================================================================
+echo "Job ID: $SLURM_JOB_ID on node: $SLURMD_NODENAME"
 
-echo "Starting AlphaFold prediction job..."
-echo "Job ID: $SLURM_JOB_ID"
-echo "Running on node: $SLURMD_NODENAME"
-
-# --- 1. Set up environment variables ---
-# Path to the Apptainer image file
+# Paths
 CONTAINER_IMAGE="/slurm/shared/alphafold/containers/alphafold.sif"
+FASTA_PATH="$HOME/my_protein.fasta"                     # change to your file
+OUTPUT_DIR="$HOME/alphafold_outputs/${SLURM_JOB_ID}"     # one folder per job
+mkdir -p "$OUTPUT_DIR"
 
-# Path to the directory containing all genetic database subdirectories
-DATA_DIR="/slurm/shared/alphafold/databases"
-
-# Path to your input FASTA file
-FASTA_PATH="/home/user/my_protein.fasta" # Change to your actual path
-
-# Directory where AlphaFold will write the output structures
-OUTPUT_DIR="/home/user/alphafold_outputs/${SLURM_JOB_ID}" # Use Job ID for unique output folder
-
-mkdir -p $OUTPUT_DIR
-
-# --- 2. Define the AlphaFold command ---
-# Note: We bind the shared directories to the container so it can see the data.
-APPTAINER_COMMAND="apptainer exec \
-    --nv \
+# Run AlphaFold. The shared directories are bound into the container.
+apptainer exec --nv \
     --bind /slurm/shared/alphafold:/data \
-    --bind $OUTPUT_DIR:/app/output \
-    --bind $(dirname $FASTA_PATH):/app/input \
-    $CONTAINER_IMAGE \
+    --bind "$OUTPUT_DIR":/app/output \
+    --bind "$(dirname "$FASTA_PATH")":/app/input \
+    "$CONTAINER_IMAGE" \
     /app/run_alphafold.sh \
-    --fasta_paths=/app/input/$(basename $FASTA_PATH) \
+    --fasta_paths=/app/input/"$(basename "$FASTA_PATH")" \
     --max_template_date=2024-01-01 \
     --data_dir=/data/databases \
     --output_dir=/app/output \
@@ -181,37 +161,34 @@ APPTAINER_COMMAND="apptainer exec \
     --template_mmcif_dir=/data/databases/pdb_mmcif/mmcif_files \
     --obsolete_pdbs_path=/data/databases/pdb_mmcif/obsolete.dat \
     --model_preset=monomer_ptm \
-    --use_gpu_relax=True"
-
-# --- 3. Run the command ---
-echo "Executing command: $APPTAINER_COMMAND"
-eval $APPTAINER_COMMAND
+    --use_gpu_relax=True
 
 echo "AlphaFold job finished."
-
 ```
 
-#### 3. Submit the Job
+These flags are for a monomer prediction with the full databases. Multimer predictions use different flags; see the [AlphaFold repository](https://github.com/google-deepmind/alphafold).
 
-From the command line, submit your script to the Slurm scheduler.
+### 3. Submit the job
 
 ```bash
 sbatch run_alphafold.sbatch
 ```
 
-#### 4. Monitor the Job
-
-You can check the status of your job in the queue.
+### 4. Monitor the job
 
 ```bash
-# See all your running/pending jobs
-squeue -u your_username
+# Your running and pending jobs
+squeue -u $USER
 
-# Check the status of a specific job
+# Details of one job
 scontrol show job <job_id>
 
-# Once finished, check the output log
+# The log, once the job has started
 cat slurm-<job_id>.out
 ```
 
-The results, including PDB files, will be in the `/home/user/alphafold_outputs/<job_id>` directory.
+The results, including PDB files, are written to `~/alphafold_outputs/<job_id>`.
+
+## When you are finished
+
+Delete the Filestore instance and the cluster when the lab no longer needs them; both are charged while they exist. Copy results you want to keep to a [storage bucket](../ursa-major-storage-create-bucket/) or campus storage first.

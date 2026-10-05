@@ -2,69 +2,82 @@
 title: "Distributed PyTorch training with Kubeflow Trainer"
 topic: Cloud
 owner: Research Computing
+reviewed: 2026-10-04
 redirect_from:
   - /Knowledge_Base/how-to-distributed-pytorch-training-with-kubeflow-trainer.html
+review_notes:
+  - "Updated the steps to Kubeflow Trainer v2 and the current Kubeflow Python SDK (pip install kubeflow, TrainerClient().train with CustomTrainer, get_job_logs, wait_for_job_status); the old create_job, stream_logs and get_job_status calls and the kubeflow/pytorch-dist-example image do not exist in the current SDK."
+  - "Fixed the training function (NCCL backend on GPUs, dataset downloaded once per node before training) and installed the built-in runtimes, which the torch-distributed runtime needs."
+  - "Added where to run this at UCR: a local kind cluster, the HPCC for Slurm-based distributed training, or GKE in a lab's own Ursa Major project as Tier 2 recharge. Removed marketing wording."
+  - "CHECK: Kubeflow Trainer v2.1.0 is used as the example release (the install guide's example); the latest release on GitHub was v2.3.0 on 2026-10-04."
+  - "CHECK: the code was compared with the Kubeflow SDK source and docs but not run end to end."
 ---
 
-The official integration of Kubeflow Trainer into the PyTorch ecosystem provides a powerful, Kubernetes-native method for running distributed training jobs. This guide will walk you through the essential steps to get started, from setting up your environment to running and monitoring a distributed PyTorch job.
+Kubeflow Trainer is the Kubeflow component for running distributed training jobs on Kubernetes. You write a PyTorch training function in Python, and Kubeflow Trainer runs copies of it across several pods (nodes), setting up the distributed environment for you. This guide covers a first job: installing the controller, writing a training function and running it from Python.
 
-## 1. Core Concepts: What is Happening?
+## Where to run this at UCR
 
-Instead of running a training script on a single machine, you will package your PyTorch code into a container and tell Kubeflow how to run it across multiple machines (nodes) in a Kubernetes cluster.
+Kubeflow Trainer needs a Kubernetes cluster where you can install the Trainer controller. Common choices:
 
-- **Kubernetes**: The underlying engine that manages and orchestrates application containers across a cluster of machines.
-- **Kubeflow**: A machine learning toolkit for Kubernetes.
-- **Kubeflow Trainer**: The specific component that simplifies running distributed training jobs (like for PyTorch, TensorFlow, etc.) on Kubernetes. It handles the complex networking and setup for you.
-- **TrainJob**: A custom resource you define in Python. It describes your training job, including the code to run, the number of workers (processes), and the resources (CPU/GPU) they need.
+- **Your own computer:** a local test cluster made with `kind` (Kubernetes in Docker), as shown below. Good for learning and for checking code before scaling up.
+- **The HPCC:** if you only need multi-GPU or multi-node PyTorch training and not Kubernetes, the [HPCC](../../services/hpcc/) runs distributed jobs through Slurm. Contact support@hpcc.ucr.edu for guidance.
+- **Google Kubernetes Engine (GKE) in your lab's Ursa Major project:** a lab's own GKE cluster, including any GPUs it uses, is a Tier 2 service recharged to a lab funding source under an MOU. See [Ursa Major service tiers](../kb005-ursa-major-service-tiers/) and [how Tier 2 setup works](../kb007-tier2-recharge-workflow/).
+- **National platforms:** the [NRP Nautilus](../../services/nautilus/) Kubernetes cluster and [NSF ACCESS](../../services/nsf-access/) are options for some projects. Check each platform's rules before installing cluster-wide controllers.
 
-## 2. Prerequisites: Setting Up Your Environment
+If you are not sure which fits, contact research-computing@ucr.edu.
 
-Before you can run a training job, you need a Kubernetes cluster with the Kubeflow Trainer controller installed. For local development, `kind` (Kubernetes in Docker) is an excellent choice.
+## Core concepts
 
-### A. Install a Local Kubernetes Cluster (with kind)
+- **Kubernetes:** runs and manages containers across a cluster of machines.
+- **Kubeflow Trainer:** a Kubernetes controller that runs distributed training (PyTorch, JAX, DeepSpeed and others) and handles the networking and environment variables each worker needs.
+- **TrainJob:** a Kubernetes custom resource that describes one training job: the code, the number of nodes and the resources per node. The Python SDK creates it for you.
+- **Training runtime:** a template (for example `torch-distributed`) that defines how a framework is launched. TrainJobs refer to a runtime.
 
-If you don't have a cluster, you can create one locally.
+## Step 1: Set up a cluster and the controller
 
-1.  **Install kind**: Follow the [official kind installation guide](https://kind.sigs.k8s.io/docs/user/quick-start/#installation).
-2.  **Create a cluster**:
-    ```bash
-    kind create cluster
-    ```
+Kubeflow Trainer needs Kubernetes and `kubectl` version 1.31 or later.
 
-### B. Install the Kubeflow Trainer Controller
+### Create a local cluster with kind
 
-Apply the controller manifests to your cluster. This installs the necessary components that watch for and manage `TrainJob` resources.
-
-```bash
-kubectl apply --server-side -k "https://github.com/kubeflow/trainer.git/manifests/overlays/manager?ref=v2.0.0"
-```
-
-### C. Install the Kubeflow Trainer SDK
-
-You'll interact with your cluster using the Python SDK.
+Install kind using the [kind quick start](https://kind.sigs.k8s.io/docs/user/quick-start/#installation), then create a cluster:
 
 ```bash
-pip install kubeflow-trainer
+kind create cluster
 ```
 
-## 3. Running a Distributed PyTorch Job: Step-by-Step
+### Install the Kubeflow Trainer controller and runtimes
 
-We will now define a simple PyTorch training function and then use the `TrainerClient` to run it as a distributed job on our cluster.
+Install a released version of the controller, then the built-in training runtimes. Use the same version for both. Replace the version with the current release listed in the [installation guide](https://www.kubeflow.org/docs/components/trainer/operator-guides/installation/).
 
-### Step 1: Define Your PyTorch Training Function
+```bash
+export VERSION=v2.1.0
+kubectl apply --server-side -k "https://github.com/kubeflow/trainer.git/manifests/overlays/manager?ref=${VERSION}"
+kubectl apply --server-side -k "https://github.com/kubeflow/trainer.git/manifests/overlays/runtimes?ref=${VERSION}"
+```
 
-This is a standard PyTorch training script. The key is that it's written to be aware of the distributed environment, which Kubeflow Trainer sets up automatically. It uses `torch.distributed` to get the `RANK` and `WORLD_SIZE`.
+Check that the controller pods are running:
 
-This function will be executed on each worker pod in the cluster.
+```bash
+kubectl get pods -n kubeflow-system
+```
 
-**`train_function.py`**
+The installation guide also describes a Helm-based install.
+
+### Install the Python SDK
+
+```bash
+pip install -U kubeflow
+```
+
+## Step 2: Write the training function
+
+Kubeflow Trainer runs this function on every node. It sets the distributed environment variables (`RANK`, `WORLD_SIZE`, `LOCAL_RANK` and the rendezvous address), so the function only needs to call `init_process_group`. Put all imports inside the function, because the function is sent to the cluster on its own.
+
 ```python
 # train_function.py
 
 def train_fashion_mnist():
-    """
-    A simple distributed training function for the FashionMNIST dataset.
-    """
+    """A small distributed training example on the FashionMNIST dataset."""
     import os
     import torch
     import torch.distributed as dist
@@ -72,136 +85,112 @@ def train_fashion_mnist():
     from torch.utils.data import DataLoader, DistributedSampler
     from torchvision import datasets, transforms
 
-    # 1. Initialize the distributed environment
-    # Kubeflow Trainer automatically sets the necessary environment variables.
-    dist.init_process_group(backend="gloo")
+    # 1. Initialize the distributed environment.
+    # Use NCCL on GPUs and Gloo on CPUs.
+    use_cuda = torch.cuda.is_available()
+    dist.init_process_group(backend="nccl" if use_cuda else "gloo")
     rank = dist.get_rank()
     world_size = dist.get_world_size()
-    device_id = int(os.environ.get("LOCAL_RANK", 0))
-    device = f"cuda:{device_id}" if torch.cuda.is_available() else "cpu"
+    local_rank = int(os.environ.get("LOCAL_RANK", 0))
+    device = torch.device(f"cuda:{local_rank}" if use_cuda else "cpu")
+    print(f"Rank {rank} of {world_size} using {device}")
 
-    print(f"Starting training on rank {rank} of {world_size} on device {device}.")
-
-    # 2. Prepare the dataset
+    # 2. Prepare the dataset. Download once per node, then load everywhere.
     transform = transforms.Compose([
         transforms.ToTensor(),
-        transforms.Normalize((0.5,), (0.5,))
+        transforms.Normalize((0.5,), (0.5,)),
     ])
-    dataset = datasets.FashionMNIST(
-        root="./data",
-        train=True,
-        download=True,
-        transform=transform
-    )
+    if local_rank == 0:
+        datasets.FashionMNIST("./data", train=True, download=True)
+    dist.barrier()
+    dataset = datasets.FashionMNIST("./data", train=True, download=False, transform=transform)
     sampler = DistributedSampler(dataset, num_replicas=world_size, rank=rank)
     train_loader = DataLoader(dataset, batch_size=64, sampler=sampler)
 
-    # 3. Define the model and wrap with DistributedDataParallel
+    # 3. Define the model and wrap it with DistributedDataParallel.
     model = torch.nn.Sequential(
         torch.nn.Flatten(),
         torch.nn.Linear(28 * 28, 128),
         torch.nn.ReLU(),
-        torch.nn.Linear(128, 10)
+        torch.nn.Linear(128, 10),
     ).to(device)
-
-    if torch.cuda.is_available():
-        model = DistributedDataParallel(model, device_ids=[device_id])
+    if use_cuda:
+        model = DistributedDataParallel(model, device_ids=[local_rank])
     else:
         model = DistributedDataParallel(model)
 
-
-    # 4. Define loss function and optimizer
+    # 4. Loss function and optimizer.
     criterion = torch.nn.CrossEntropyLoss()
     optimizer = torch.optim.SGD(model.parameters(), lr=0.01)
 
-    # 5. Run the training loop
+    # 5. Training loop.
+    num_epochs = 3
     model.train()
-    for epoch in range(3): # 3 epochs for demonstration
+    for epoch in range(num_epochs):
         sampler.set_epoch(epoch)
-        for batch_idx, (data, target) in enumerate(train_loader):
+        for data, target in train_loader:
             data, target = data.to(device), target.to(device)
             optimizer.zero_grad()
-            output = model(data)
-            loss = criterion(output, target)
+            loss = criterion(model(data), target)
             loss.backward()
             optimizer.step()
-
-        # Only print from the master process (rank 0)
         if rank == 0:
-            print(f"Epoch {epoch+1}/{3} | Loss: {loss.item():.4f}")
+            print(f"Epoch {epoch + 1}/{num_epochs} | Loss: {loss.item():.4f}")
 
-    # 6. Clean up the distributed environment
-    dist.destroy_process_group()
-
+    # 6. Clean up.
+    dist.barrier()
     if rank == 0:
-        print("Training complete!")
+        print("Training complete")
+    dist.destroy_process_group()
 ```
 
-### Step 2: Create and Run the TrainJob
+## Step 3: Create and run the TrainJob
 
-Now, from a separate Python script or a Jupyter Notebook, you use the `TrainerClient` to package and send the `train_fashion_mnist` function to your cluster.
+From a separate script or a Jupyter notebook, use `TrainerClient` to send the function to the cluster. The client uses your current `kubectl` context.
 
-**`main_launcher.py`**
 ```python
 # main_launcher.py
 
-from kubeflow.trainer import TrainerClient
-from train_function import train_fashion_mnist # Import the function
+from kubeflow.trainer import TrainerClient, CustomTrainer
+from train_function import train_fashion_mnist
 
-# 1. Initialize the TrainerClient
-# This client connects to your currently configured Kubernetes cluster (from kubectl).
 client = TrainerClient()
 
-# 2. Define the TrainJob
-# This specifies what to run and how to run it.
-job_name = "pytorch-fashion-mnist-example"
+# List the runtimes installed on the cluster. You should see torch-distributed.
+for r in client.list_runtimes():
+    print(f"Runtime: {r.name}")
 
-# We use a public container image that has PyTorch and other common libraries.
-# For your own projects, you would build and push your own image.
-image = "docker.io/kubeflow/pytorch-dist-example:latest"
-
-# Define the job
-job = client.create_job(
-    name=job_name,
-    train_func=train_fashion_mnist,
-    base_image=image,
-    num_workers=2,  # We'll run the training across 2 pods (workers)
-    resources_per_worker={
-        "cpu": "1",         # Request 1 CPU core per worker
-        "memory": "2Gi"     # Request 2Gi of memory per worker
-        # For GPUs, you would add: "gpu": "1"
-    }
+# Create the TrainJob: 2 nodes, each with 1 CPU core and 2 GiB of memory.
+job_id = client.train(
+    runtime="torch-distributed",
+    trainer=CustomTrainer(
+        func=train_fashion_mnist,
+        num_nodes=2,
+        resources_per_node={
+            "cpu": 1,
+            "memory": "2Gi",
+            # "gpu": 1,  # uncomment if the nodes have GPUs
+        },
+    ),
 )
+print(f"Created TrainJob {job_id}")
 
-print(f"TrainJob '{job.name}' created. Status: {job.status}")
+# Stream the logs from the first node (node-0).
+for line in client.get_job_logs(job_id, follow=True):
+    print(line)
 
-# 3. Monitor the Job
-print("\nStreaming logs:")
-client.stream_logs(job_name)
+# Wait for the job to finish (raises an error if it fails or times out).
+job = client.wait_for_job_status(job_id, timeout=1800)
+print(f"Final status: {job.status}")
 
-# 4. Check the Final Status and Clean Up
-job_status = client.get_job_status(job_name)
-print(f"\nFinal job status: {job_status}")
-
-if job_status == "Succeeded":
-    print("Job completed successfully!")
-else:
-    print("Job failed or is in an unknown state.")
-
-# 5. (Optional) Delete the job
-# client.delete_job(job_name)
-# print(f"Job '{job_name}' deleted.")
+# Delete the job when you no longer need its logs.
+# client.delete_job(job_id)
 ```
 
-## 4. Practical Usage & Next Steps
+You can also check the job with `kubectl get trainjobs` and `kubectl get pods`.
 
--   **Using GPUs**: To use GPUs, your Kubernetes nodes must have GPUs available and the appropriate drivers installed. Then, simply add `"gpu": "1"` to the `resources_per_worker` dictionary.
--   **Custom Code and Docker Images**: The `base_image` is key. For real projects, you will need to:
-    1.  Write your Python script(s).
-    2.  Create a `Dockerfile` that installs your dependencies (`pip install -r requirements.txt`) and copies your code into the image.
-    3.  Build the Docker image.
-    4.  Push the image to a container registry (like Docker Hub, Google Container Registry, etc.).
-    5.  Use that image path in your `create_job` call.
--   **Advanced Strategies**: The Kubeflow Trainer is deeply integrated with the PyTorch ecosystem, supporting advanced distributed strategies like Fully Sharded Data Parallel (FSDP) and integrations with libraries like DeepSpeed and HuggingFace.
+## Next steps
 
-This new integration significantly lowers the barrier to entry for serious, scalable machine learning development with PyTorch on modern cloud infrastructure.
+- **GPUs:** the nodes need GPUs with drivers and the NVIDIA device plugin installed. Then add `"gpu": 1` to `resources_per_node`. On a cloud cluster, GPU nodes are billed while they run; scale node pools down when you are done.
+- **Your own code and packages:** for small additions, `CustomTrainer` accepts `packages_to_install`. For real projects, build a container image with your dependencies, push it to a registry (for example Artifact Registry in your Google Cloud project), and pass it with the `image` argument.
+- **Other strategies:** Kubeflow Trainer also supports DeepSpeed, JAX, FSDP-style training and more. See the [Kubeflow Trainer documentation](https://www.kubeflow.org/docs/components/trainer/) and the [Getting Started guide](https://www.kubeflow.org/docs/components/trainer/getting-started/).

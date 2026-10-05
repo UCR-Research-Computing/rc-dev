@@ -2,106 +2,128 @@
 title: "Running open-source language models with Ollama"
 topic: Cloud
 owner: Research Computing
+reviewed: 2026-10-04
 redirect_from:
   - /Knowledge_Base/ollama-how-to.html
+review_notes:
+  - "Fixed the setup steps (Compute Engine, not App Engine), replaced the 'full data privacy' and 'no extra cost' claims, and added notes on shutting the VM down and keeping the Ollama port private."
+  - "Replaced the outdated Llama 2 era model table with a short list of current models from the Ollama library (sizes as listed on 2026-10-04) and updated examples from llama2 to llama3.2."
+  - "Linked the Ollama import, Modelfile and CLI docs, removed a developer's name from an example file path, and kept the Tier 2 recharge note with links to KB005 and KB007."
+  - "CHECK: the Google Cloud console still offers the 'Switch image' prompt to a GPU-ready Deep Learning VM image when a GPU is added, and that image still asks to install NVIDIA drivers at first login."
 ---
 
-**Cost note:** cloud GPU workstations (such as the T4 used below) are a recharged (Tier 2) service. Following this guide on Google Cloud creates recharged usage billed to your lab's funding source. To run models on GPUs at lower cost to the lab, consider the [HPCC](../../services/hpcc/).
+**Cost note:** a cloud VM with a GPU (such as the NVIDIA T4 used below) in your lab's Ursa Major project is a Tier 2 service. Following this guide on Google Cloud creates usage recharged to your lab's funding source, billed for as long as the VM runs. See [Ursa Major service tiers](../kb005-ursa-major-service-tiers/) and [how Tier 2 setup works](../kb007-tier2-recharge-workflow/). Other options:
 
-This comprehensive guide outlines the process for setting up a GPU-enabled workstation on UCR Research Computing's Ursa Major (GCP Console) to run your own copy of an offline AI Large Language Model (LLM), such as Llama 2 or Gemma, with full data privacy.
+- The [HPCC](../../services/hpcc/) has GPU partitions for batch work. Ask support@hpcc.ucr.edu whether Ollama or a similar tool fits your work there.
+- For general-purpose AI tools available to the campus, see [UCR AI tools](https://its.ucr.edu/ai).
 
-#### Step 1: Create Your GPU Workstation
+This guide shows how to set up a GPU virtual machine (a research workstation) in your Ursa Major Google Cloud project and run an open-source large language model (LLM), such as Llama or Gemma, with Ollama. The model runs on your VM, so prompts and responses are not sent to an outside model API. You are still responsible for the VM's security and for following the rules for your data's classification; see [Security](../../security/).
 
-- **Access Ursa Major (GCP Console)**: Go to the Google Cloud Platform (GCP) console and select App Engine.
-- **Create Instance**: Click "Create Instance" to initiate the setup of your new workstation.
-- **Select GPU Node**: Opt for a GPU node configuration that includes a T4 GPU for optimal performance.
-- **Switch Image for CUDA Support**: In the Boot Disk section, notice a prompt regarding manual NVIDIA CUDA stack installation. Click "Switch Image" to choose a GPU-optimized Debian OS image with CUDA support at no extra cost.
-- **Create Your Workstation**: Complete the creation of your workstation. It will be ready in about 30 seconds to 3 minutes.
+## Step 1: Create the GPU workstation
 
-#### Step 2: Initial Setup and Installation
+1. Open the [Google Cloud console](https://console.cloud.google.com) and select your lab's project.
+2. Go to **Compute Engine**, then **VM instances**, then **Create instance**.
+3. Under machine configuration, choose **GPUs** and select an **NVIDIA T4**. If no GPU is available in your project or zone, contact research-computing@ucr.edu.
+4. In the **Boot disk** section, the console notes that the selected image needs the NVIDIA CUDA stack installed manually. Click **Switch image** to use a GPU-ready Deep Learning VM image (Debian with CUDA).
+5. Click **Create**. The VM is usually ready within a few minutes.
 
-- **SSH Connection**: After your workstation is ready, click the SSH button to connect.
-- **NVIDIA Drivers Installation**: At your first login, you'll be prompted to install NVIDIA drivers. Enter "Y" for yes to continue with the installation.
-- **Install Ollama**: Execute the following command to install Ollama, the tool that makes it easy to access and use popular open-source LLM models like Llama2 and Gemma. The installation is quick and efficient.
+For more detail, see [Launching an Ursa Major research workstation](../ursa-major-workstation-launch/).
+
+## Step 2: Connect and install Ollama
+
+1. When the VM is ready, click **SSH** next to it in the console.
+2. At first login, the Deep Learning VM image asks whether to install the NVIDIA driver. Enter `y`. Check the driver with `nvidia-smi`.
+3. Install Ollama:
+
+    ```bash
+    curl -fsSL https://ollama.com/install.sh | sh
+    ```
+
+4. Confirm the install:
+
+    ```bash
+    ollama --version
+    ```
+
+Ollama serves its API on `localhost` port 11434. Leave it there. Do not open that port to the internet with a firewall rule; anyone who can reach it can use your model and your GPU time.
+
+## Step 3: Download and run a model
+
+Browse the [Ollama model library](https://ollama.com/library) for available models. To download and chat with Llama 3.2:
 
 ```bash
-curl -fsSL https://ollama.com/install.sh | sh
+ollama run llama3.2
 ```
 
-After installing, verify the installation with `ollama --version` to confirm Ollama is installed.
+Type `/bye` to leave the chat.
 
-#### Step 3: Downloading and Running Models
+Some current models, with the download size of the default version as listed in the library on 2026-10-04 (models and sizes change often):
 
-Visit the [Ollama Model Library](https://ollama.com/library?sort=popular) to explore and download popular models. Here's a quick start to running and chatting with Llama 2:
+| Model | Parameters | Size | Command |
+| --- | --- | --- | --- |
+| Llama 3.2 | 1B | 1.3 GB | `ollama run llama3.2:1b` |
+| Llama 3.2 | 3B | 2.0 GB | `ollama run llama3.2` |
+| Gemma 3 | 4B | 3.3 GB | `ollama run gemma3` |
+| Mistral | 7B | 4.4 GB | `ollama run mistral` |
+| Qwen 3 | 8B | 5.2 GB | `ollama run qwen3` |
+| Phi-4 | 14B | 9.1 GB | `ollama run phi4` |
 
-- **Run Llama 2**: Input `ollama run llama2` in your terminal.
+**Memory:** Ollama suggests at least 8 GB of RAM for 7B models, 16 GB for 13B models and 32 GB for 33B models. To run fully on the GPU, the model also needs to fit in GPU memory (a T4 has 16 GB). Check each model's license before using it in your research.
 
-Ollama supports a variety of models, including but not limited to:
+**When you are done:** stop the VM in the console. A stopped VM is not charged for GPU and CPU time, but its disk is still charged. Delete the VM and disk when you no longer need them.
 
-| Model               | Parameters | Size  | Download Command            |
-|---------------------|------------|-------|-----------------------------|
-| Llama 2             | 7B         | 3.8GB | `ollama run llama2`         |
-| Mistral             | 7B         | 4.1GB | `ollama run mistral`        |
-| Dolphin Phi         | 2.7B       | 1.6GB | `ollama run dolphin-phi`    |
-| Phi-2               | 2.7B       | 1.7GB | `ollama run phi`            |
-| Neural Chat         | 7B         | 4.1GB | `ollama run neural-chat`    |
-| Starling            | 7B         | 4.1GB | `ollama run starling-lm`    |
-| Code Llama          | 7B         | 3.8GB | `ollama run codellama`      |
-| Llama 2 Uncensored  | 7B         | 3.8GB | `ollama run llama2-uncensored` |
-| Llama 2 13B         | 13B        | 7.3GB | `ollama run llama2:13b`     |
-| Llama 2 70B         | 70B        | 39GB  | `ollama run llama2:70b`     |
-| Orca Mini           | 3B         | 1.9GB | `ollama run orca-mini`      |
-| Vicuna              | 7B         | 3.8GB | `ollama run vicuna`         |
-| LLaVA               | 7B         | 4.5GB | `ollama run llava`          |
-| Gemma               | 2B         | 1.4GB | `ollama run gemma:2b`       |
-| Gemma               | 7B         | 4.8GB | `ollama run gemma:7b`       |
+## Customize a model
 
-**Note:** You should have at least 8 GB of RAM available to run the 7B models, 16 GB to run the 13B models, and 32 GB to run the 33B models.
+### Import a GGUF model
 
-## Customize a Model
+1. Create a file named `Modelfile` with a `FROM` line that points to the local GGUF file:
 
-### Import from GGUF
-
-Ollama supports importing GGUF models in the `Modelfile`:
-
-- **Create a `Modelfile`**: With a `FROM` instruction with the local filepath to the model you want to import.
     ```plaintext
-    FROM ./vicuna-33b.Q4_0.gguf
+    FROM ./my-model.Q4_0.gguf
     ```
-- **Create the model in Ollama**:
+
+2. Create the model in Ollama:
+
     ```bash
     ollama create example -f Modelfile
     ```
-- **Run the model**:
+
+3. Run it:
+
     ```bash
     ollama run example
-   ```
+    ```
 
 ### Import from PyTorch or Safetensors
 
-See the guide on importing models for more information.
+See the Ollama guide to [importing models](https://docs.ollama.com/import).
 
-### Customize a Prompt
+### Customize a prompt
 
-Models from the Ollama library can be customized with a prompt. For example, to customize the llama2 model:
+Models from the Ollama library can be customized with a prompt and parameters. For example, with `llama3.2`:
 
-1. **Pull the model**:
+1. Pull the model:
+
     ```bash
-    ollama pull llama2
+    ollama pull llama3.2
     ```
-2. **Create a `Modelfile`**:
+
+2. Create a `Modelfile`:
+
     ```plaintext
-    FROM llama2
-    
+    FROM llama3.2
+
     # set the temperature to 1 [higher is more creative, lower is more coherent]
     PARAMETER temperature 1
-    
+
     # set the system message
     SYSTEM """
     You are Mario from Super Mario Bros. Answer as Mario, the assistant, only.
     """
     ```
-3. **Next, create and run the model**:
+
+3. Create and run the model:
+
     ```bash
     ollama create mario -f ./Modelfile
     ollama run mario
@@ -111,34 +133,39 @@ Models from the Ollama library can be customized with a prompt. For example, to 
     >>> hi
     Hello! It's your friend Mario.
     ```
-For more examples, see the examples directory. For more information on working with a `Modelfile`, see the Modelfile documentation.
 
-### CLI Reference
+For all `Modelfile` options, see the [Modelfile reference](https://docs.ollama.com/modelfile). For what settings such as temperature do, see [LLM inference settings](../llm-inference-settings/).
 
-- **Create a model**: `ollama create` is used to create a model from a `Modelfile`.
+## CLI reference
+
+- **Create a model** from a `Modelfile`:
+
     ```bash
     ollama create mymodel -f ./Modelfile
     ```
-- **Pull a model**: `ollama pull llama2`
-    This command can also be used to update a local model. Only the diff will be pulled.
-- **Remove a model**: `ollama rm llama2`
-- **Copy a model**: `ollama cp llama2 my-llama2`
-- **Multiline input**: For multiline input, you can wrap text with `"""`:
+
+- **Pull a model:** `ollama pull llama3.2`. This also updates a local model; only the changes are downloaded.
+- **Remove a model:** `ollama rm llama3.2`
+- **Copy a model:** `ollama cp llama3.2 my-llama`
+- **List downloaded models:** `ollama list`
+- **Multiline input:** wrap text in `"""`:
+
     ```plaintext
     >>> """Hello,
     ... world!
     ... """
-    I'm a basic program that prints the famous "Hello, world!" message to the console.
-    ```
-- **Multimodal models**:
-    ```plaintext
-    >>> What's in this image? /Users/jmorgan/Desktop/smile.png
-    The image features a yellow smiley face, which is likely the central focus of the picture.
-    ```
-- **Pass in prompt as arguments**:
-    ```bash
-    $ ollama run llama2 "Summarize this file: $(cat README.md)"
     ```
 
-    Ollama is a lightweight, extensible framework for building and running language models on the local machine. It provides a simple API for creating, running, and managing models, as well as a library of pre-built models that can be easily used in a variety of applications.
-- **List models on your computer**: `ollama list`
+- **Images (vision models such as `gemma3`):** include the image path in the prompt:
+
+    ```plaintext
+    >>> What's in this image? ./smile.png
+    ```
+
+- **Pass a prompt as an argument:**
+
+    ```bash
+    ollama run llama3.2 "Summarize this file: $(cat README.md)"
+    ```
+
+See the [Ollama CLI reference](https://docs.ollama.com/cli) and [API reference](https://docs.ollama.com/api) for more.

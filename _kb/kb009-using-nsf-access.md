@@ -3,22 +3,29 @@ title: "Using NSF ACCESS and Jetstream2"
 kb_id: KB009
 topic: National
 audience: "UCR faculty, postdocs and graduate students"
-updated: 2026-09-28
+reviewed: 2026-10-04
 owner: Research Computing
 redirect_from:
   - /Knowledge_Base/KB009_Using_NSF_ACCESS.html
+review_notes:
+  - "Removed the ACCESS credit limits from the project-type table and the SU sizing section; the article now links the ACCESS project types page for current limits. Checked the remaining ACCESS steps, policies and Jetstream2 flavors, SU rates, state charges and default storage against access-ci.org and docs.jetstream-cloud.org on 2026-10-04."
+  - "Added links to the NSF ACCESS, Nautilus and NAIRR service pages and the ACCESS resource list, a row pointing cloud VMs on Google Cloud to Ursa Major Tier 2, and a Research Computing contact."
+  - "CHECK: Research Computing staff are currently registered as ACCESS Campus Champions for UCR."
+  - "CHECK: the Exosphere sign-in steps (Add ACCESS account, then ACCESS CI (XSEDE) at CILogon) still match the current Jetstream2 interface."
 ---
 
 ## 1. What is ACCESS?
 
-**ACCESS** (Advanced Cyberinfrastructure Coordination Ecosystem: Services & Support) is the National Science Foundation program that gives U.S. researchers allocations of time on national computing systems. It replaced XSEDE in 2022. If you had an XSEDE account, it is now your ACCESS account.
+**ACCESS** (Advanced Cyberinfrastructure Coordination Ecosystem: Services & Support) is the National Science Foundation program that awards U.S. researchers allocations of time on national computing systems. It replaced XSEDE in 2022. If you had an XSEDE account, it is now your ACCESS account. See the [NSF ACCESS service page](../../services/nsf-access/) for a summary and [access-ci.org](https://access-ci.org) for the program itself.
 
-ACCESS covers much more than giant supercomputer jobs. Through one account you can get:
+ACCESS covers much more than large supercomputer jobs. Through one account you can request:
 
 * **Cloud virtual machines** you fully control (root/sudo), on **Jetstream2**. Good for always-on servers, web apps, databases, Jupyter, and interactive work.
 * **Batch HPC** on systems such as Anvil, Expanse, Stampede3 and Delta.
 * **GPUs** (NVIDIA A100 and others) for AI and simulation.
 * **Large-memory nodes** and storage.
+
+The current list is on the [ACCESS resources page](https://allocations.access-ci.org/resources). UCR does not recharge for ACCESS allocations.
 
 ### When to use ACCESS
 
@@ -26,9 +33,10 @@ ACCESS covers much more than giant supercomputer jobs. Through one account you c
 | :--- | :--- |
 | Batch jobs, Slurm, GPU training on campus | UCR HPCC (see [KB004](../kb004-hpcc-account-creation/)) |
 | Always-on VMs, servers with public IPs, full admin control | **ACCESS: Jetstream2** (this article) |
+| VMs in Google Cloud in your lab's own project | Ursa Major, recharged as Tier 2 (see [KB005](../kb005-ursa-major-service-tiers/)) |
 | More capacity than HPCC, or a specific national system | **ACCESS** (this article) |
-| Containers and Kubernetes | Nautilus / National Research Platform (see [KB010](../kb010-resource-catalog/)) |
-| Large-scale AI, specialized AI hardware, model API credits | NAIRR Pilot (see [KB008](../kb008-using-nairr-pilot/)) |
+| Containers and Kubernetes | [NRP Nautilus](../../services/nautilus/) |
+| Large-scale AI, specialized AI hardware, model API credits | [NAIRR Pilot](../../services/nairr/) (see [KB008](../kb008-using-nairr-pilot/)) |
 
 ---
 
@@ -38,28 +46,29 @@ You request a **project**. Most projects are awarded **ACCESS Credits**, which y
 
 | | Explore | Discover | Accelerate | Maximize |
 | :--- | :--- | :--- | :--- | :--- |
-| **Credit limit** | 400,000 | 1,500,000 | 3,000,000 | Awarded in resource units |
 | **What you submit** | Short overview (abstract) | 1-page proposal | Up to 3 pages | Up to 10 pages |
 | **Review** | Eligibility and fit | Eligibility and fit | Panel merit review | Panel merit review |
 | **When** | Anytime | Anytime | Anytime | Every 6 months |
 | **Length** | 12 months or your grant's length, whichever is longer | Same | Same | 12 months |
 
+Each project type has a credit limit, which grows from Explore to Accelerate; Maximize is awarded in resource units. ACCESS publishes the current limits on its [project types page](https://allocations.access-ci.org/project-types).
+
 **Start with Explore** if you are new or unsure. It is meant for trying out resources, benchmarking, code development, small classes and graduate student work. You can upgrade later.
 
-Credits come in two halves: the first half is available when your project is approved, and you request the second half later with a short progress report (a "Supplement").
+For Explore, Discover and Accelerate, up to half of the credit limit is awarded with the first request. You request the rest later with a progress report (a "Supplement").
 
 ---
 
 ## 3. Getting Started, Step by Step
 
-You can do everything below yourself. Expect one to two weeks from zero to a running machine, most of it waiting on approvals.
+You can do everything below yourself. Going from no account to a running machine often takes one to two weeks, most of it waiting on approvals.
 
 ### Step 1: Create your ACCESS account (about 10 minutes)
 
 1. Go to the [ACCESS registration page](https://operations.access-ci.org/identity/new-user).
 2. Choose one of two options:
    * **Register with an existing identity:** pick University of California, Riverside if it is listed and sign in with your UCR account.
-   * **Register without an existing identity:** if UCR is not listed or the sign-in fails, create an ACCESS password and set up Duo (use Duo Push in the Duo Mobile app; the phone-call option is unreliable).
+   * **Register without an existing identity:** if UCR is not listed or the sign-in fails, create an ACCESS password and set up Duo (use Duo Push in the Duo Mobile app; ACCESS advises against the phone-call option).
 3. Use your **ucr.edu** email address. Gmail, Yahoo and other personal addresses are not accepted.
 4. Do not close the browser partway through. Enter the verification code that **registry@cilogon.org** emails you (check spam). If registration stalls, contact ACCESS support rather than creating a second account.
 5. Write down your **ACCESS ID** (username). Collaborators need it to add you to projects.
@@ -76,7 +85,7 @@ Tip: fill in your profile and link your ORCID iD. Awarded projects then show up 
    * **Graduate student leading the project?** Upload a signed letter from your advisor (or your NSF GRFP letter).
    * **Class use?** Upload the syllabus.
    * Check the box to request **ACCESS Credits**.
-3. Submit. You will get a confirmation email, then a decision, usually by the next business day.
+3. Submit. ACCESS sends a confirmation email, then a decision, usually by the next business day.
 
 ### Step 3: Exchange credits for resource time (allow up to a week)
 
@@ -85,7 +94,7 @@ Tip: fill in your profile and link your ORCID iD. Awarded projects then show up 
 1. At [allocations.access-ci.org](https://allocations.access-ci.org), go to **Manage Allocations**, then **Manage My Projects**, then **New Action**, then **Exchange**.
 2. Pick one or more resources and enter the amount. Your remaining credit balance updates as you type.
 3. Each resource has its own exchange rate. The **Exchange Calculator** on the ACCESS site helps you estimate.
-4. The resource provider reviews the exchange to confirm it fits your work. Allow up to a week. You will get an email when it is approved.
+4. The resource provider reviews the exchange to confirm it fits your work. Allow up to a week. ACCESS emails you when it is approved.
 
 For Jetstream2, see Section 4 for which resource to pick and how much to request.
 
@@ -116,7 +125,7 @@ Jetstream2 has **three separate resources**. When you exchange credits, pick eac
 | **Jetstream2 Large Memory** | Twice the RAM of the equivalent CPU VM | 2 SUs per core per hour |
 | **Jetstream2 GPU** | Part of an NVIDIA A100, or full GPUs | 2 SUs per core per hour |
 
-**1 ACCESS Credit = 1 Jetstream2 SU.**
+Jetstream2 sets **1 ACCESS Credit = 1 Jetstream2 SU** ([ACCESS Credits and Jetstream2](https://docs.jetstream-cloud.org/general/access/)).
 
 ### Common VM sizes ("flavors")
 
@@ -132,14 +141,15 @@ Jetstream2 has **three separate resources**. When you exchange credits, pick eac
 | g3.medium | 8 | 30 GB | 60 GB | 25% of an A100 (10 GB) | 16 |
 | g3.large | 16 | 60 GB | 60 GB | 50% of an A100 (20 GB) | 32 |
 
-Full-GPU and larger flavors are also available; some require a request to the Jetstream2 help desk. See the full [Instance Flavors](https://docs.jetstream-cloud.org/general/vmsizes/) list. Each allocation includes **1 TB of storage** by default.
+Full-GPU and larger flavors are also available; some require a request to the Jetstream2 help desk. See the full [Instance Flavors](https://docs.jetstream-cloud.org/general/vmsizes/) list. Each allocation includes a default storage quota (1 TB at the time of writing); more storage is a separate request.
 
 ### How many SUs do I need?
 
 * **Always on:** SUs per hour x 24 x 365. Example: one m3.medium running all year = 8 x 24 x 365 = **70,080 SUs**.
 * **Part time:** SUs per hour x hours you will use it. Example: an m3.medium used 10 hours a week for a year = 8 x 520 = **4,160 SUs** (shelve it the rest of the time).
-* An Explore project (up to 400,000 credits) covers several small or medium VMs for a year, or a GPU VM for part of the year. A g3.large running nonstop for a year is about 280,000 SUs.
-* Running low is fixable: request the second half of your credits (Supplement) or move up to Discover.
+* **GPU example:** a g3.large running nonstop for a year is about 280,000 SUs (32 x 24 x 365).
+* Compare your estimate with the credit limit for your project type on the [project types page](https://allocations.access-ci.org/project-types). Jetstream2 also has a [usage estimation calculator](https://docs.jetstream-cloud.org/general/vmsizes/).
+* Running low is fixable: request the second half of your credits (Supplement) or move up to a larger project type.
 
 ### Launch your first VM
 
@@ -164,7 +174,7 @@ A running VM uses SUs even when nobody is logged in.
 | Stopped | 50% |
 | **Shelved** | **0%** |
 
-**Shelve** VMs you are not using. Usage appears on the ACCESS site 12 to 24 hours after the fact, so do not rely on it for same-day tracking.
+**Shelve** VMs you are not using. Shelving and unshelving each take a few minutes, so shelve at the end of a day or week, not for short breaks. Usage appears on the ACCESS site 12 to 24 hours after the fact, so do not rely on it for same-day tracking.
 
 ---
 
@@ -173,7 +183,7 @@ A running VM uses SUs even when nobody is logged in.
 * **More credits:** submit a **Supplement** request (for the second half of your credits) with a short progress report. Decisions usually come within two weeks.
 * **Upgrade:** when you outgrow Explore, request a Discover or Accelerate project.
 * **Move credits:** use **Exchange** to add a resource, or **Transfer** to move units between resources.
-* **Extensions:** unfunded projects can be extended in 12-month increments, up to five years. Funded projects can be extended if the grant is extended.
+* **Extensions:** unfunded projects can be extended in 12-month increments, up to five years. Funded projects can be extended if the grant is extended. See the [ACCESS allocations policy](https://allocations.access-ci.org/allocations-policy).
 * **Acknowledge ACCESS** in papers and report publications on the ACCESS site. This helps future requests.
 
 ---
@@ -184,6 +194,6 @@ A running VM uses SUs even when nobody is logged in.
 * **Jetstream2 help desk:** help@jetstream-cloud.org. They can also advise on which VM size and how many SUs fit your work.
 * **ACCESS support, tickets and knowledge base:** [support.access-ci.org](https://support.access-ci.org)
 * **ACCESS allocations guide:** [Get Your First Project](https://allocations.access-ci.org/get-your-first-project)
+* **Research Computing:** research-computing@ucr.edu. We can look over a request with you or help you choose between ACCESS and campus options.
 
-**Campus Champions:** The UCR Research Computing team acts as UCR's ACCESS Campus Champions.
-
+**Campus Champions:** the UCR Research Computing team acts as UCR's ACCESS Campus Champions.

@@ -2,35 +2,73 @@
 title: "How to Automate Data Deletion in AWS S3 with Lifecycle Policies"
 topic: Storage
 owner: Research Computing
+reviewed: 2026-10-04
+review_notes:
+  - "Removed the duplicate H1 and marketing intro; updated the console steps to current S3 labels (rule scope, 'Expire current versions of objects', Create rule)."
+  - "Added versioned-bucket handling, a CLI example, a warning that expiration is permanent, and links to AWS docs and the Cloud accounts service page."
+  - "CHECK: whether CephRDS supports S3 lifecycle expiration rules for labs; the article only says to ask Research Computing."
 redirect_from:
   - /Knowledge_Base/how-to-s3-auto-migrate-delete.html
 ---
 
-# Automating Data Deletion in AWS S3 with Lifecycle Policies
+An Amazon S3 lifecycle rule can delete objects automatically after a set number of days, or move them to a cheaper storage class. This helps you follow a data retention plan and avoid paying to store data you no longer need. This article covers the deletion (expiration) rule.
 
-In the realm of cloud storage, managing data lifecycle is crucial for both security and cost management. Amazon S3 offers a powerful feature known as lifecycle policies, allowing users to automate the process of transitioning objects to more cost-effective storage classes or deleting them after a certain period. This guide provides a step-by-step approach to setting up a lifecycle policy for your S3 bucket, ensuring that your data is automatically managed according to your specific needs.
+UCR researchers get AWS accounts through ITS under the University of California agreements; see [Cloud accounts](../../services/cloud-accounts/). For on-campus S3 storage, see [CephRDS](../../services/cephrds/), and ask research-computing@ucr.edu whether lifecycle rules can be applied to your CephRDS bucket.
 
-## Step 1: Create a Bucket
+**Expiration is permanent.** Once a rule deletes an object, it cannot be recovered unless you keep another copy. Check the rule's scope carefully, and check your data retention obligations (funder, journal, and UC records rules; see [Records retention](../../security/records-retention/)) before you set one.
 
-First, you'll need an S3 bucket to store your directories (folders). If you haven't created one yet, follow these steps:
+## Step 1: Create a bucket (if you need one)
 
-1. Log in to the AWS Management Console and open the Amazon S3 console.
+1. Sign in to the AWS Management Console and open the **S3** console.
 2. Click **Create bucket**.
-3. Provide a name for your bucket and select the AWS Region where you want the bucket to reside.
-4. Follow the on-screen instructions to configure options and permissions as needed, then click **Create bucket**.
+3. Enter a bucket name and choose the AWS Region.
+4. Review the other settings, then click **Create bucket**.
 
-## Step 2: Apply a Lifecycle Rule
+## Step 2: Add a lifecycle rule
 
-Once your bucket is ready, you can set up a lifecycle rule to automate the deletion of objects. Here's how:
+1. In the S3 console, open your bucket and select the **Management** tab.
+2. Under **Lifecycle rules**, click **Create lifecycle rule**.
+3. Enter a **Lifecycle rule name**.
+4. Choose the **rule scope**:
+   - **Limit the scope of this rule using one or more filters**, and enter a **prefix** (for example `scratch/`) to apply it to one folder; or
+   - **Apply to all objects in the bucket**, and tick the acknowledgement.
+5. Under **Lifecycle rule actions**, select **Expire current versions of objects**.
+6. Enter the number of **Days after object creation** (for example, `90`).
+7. Review the summary and click **Create rule**.
 
-1. Go to the **S3 management console**.
-2. Navigate to your bucket, then click on **Management**.
-3. Click **Create lifecycle rule**.
-4. Enter a name for your rule and, under **Filter**, specify the rule to apply to a specific directory by setting the prefix, or leave it blank to apply it to the whole bucket.
-5. In the **Lifecycle rule actions** section, under **Expiration**, click **Add expiration**.
-   - Here, you can specify the number of days until the objects are automatically deleted. For instance, to delete objects after 90 days, enter **90** in the **Days after object creation** field.
-6. Finally, click **Save** to apply the rule.
+S3 runs lifecycle rules in the background. Objects are usually removed within a day or two of reaching the set age, not at an exact time.
 
-This method does not require manual intervention after setup, automating the deletion process based on the rule's configuration.
+### If versioning is turned on
 
-By following these steps, you ensure that your AWS S3 bucket's data is efficiently managed, transitioning or deleting objects as needed without manual oversight. This practice not only helps in managing data retention policies but also aids in controlling storage costs effectively.
+In a versioned bucket, expiring the current version only adds a delete marker; the older versions remain and are still billed. To remove them too, also select **Permanently delete noncurrent versions of objects** and set the number of days.
+
+## Command-line alternative
+
+The same rule with the AWS CLI. Save this as `lifecycle.json` (replace the prefix and days as needed):
+
+```json
+{
+  "Rules": [
+    {
+      "ID": "expire-scratch-after-90-days",
+      "Filter": { "Prefix": "scratch/" },
+      "Status": "Enabled",
+      "Expiration": { "Days": 90 }
+    }
+  ]
+}
+```
+
+Then apply it to your bucket:
+
+```bash
+aws s3api put-bucket-lifecycle-configuration --bucket my-lab-bucket --lifecycle-configuration file://lifecycle.json
+```
+
+This replaces any existing lifecycle configuration on the bucket. To see what is already set, run `aws s3api get-bucket-lifecycle-configuration --bucket my-lab-bucket` first.
+
+## More information
+
+- [Managing the lifecycle of objects (AWS)](https://docs.aws.amazon.com/AmazonS3/latest/userguide/object-lifecycle-mgmt.html)
+- [Setting a lifecycle configuration on a bucket (AWS)](https://docs.aws.amazon.com/AmazonS3/latest/userguide/how-to-set-lifecycle-configuration-intro.html)
+- For Google Cloud Storage, see [Object Lifecycle Management](https://cloud.google.com/storage/docs/lifecycle) and [KB012: Using Ursa Major archive storage](../kb012-migrating-data-to-archive/).

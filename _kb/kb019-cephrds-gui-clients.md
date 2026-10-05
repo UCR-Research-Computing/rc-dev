@@ -3,45 +3,61 @@ title: "Accessing CephRDS via Graphical S3 Clients"
 kb_id: KB019
 topic: Storage
 audience: "UCR Faculty, Postdocs, Researchers & Students"
-updated: 2026-08-19
+reviewed: 2026-10-04
 owner: Research Computing
+review_notes:
+  - "Removed the architecture image: it used Liquid outside a fact include and has garbled AI-generated labels ('Collected anth-rrate', an OSD icon under monitor nodes). The file is still in assets/images."
+  - "Replaced 'officially recommended' and 'effortlessly' wording; the bucket example is now a placeholder instead of a NetID-based name."
+  - "CHECK: the us3ui field names (Endpoint, Bucket Name, Use SSL) still match the current release (project last updated Jul 2026)."
+  - "CHECK: whether the Cyberduck 'Amazon S3' profile works as-is or a generic S3 profile with path-style is needed for rds.ucr.edu."
 redirect_from:
   - /Knowledge_Base/KB019_CephRDS_GUI_Clients.html
 ---
 
+Command-line tools such as `rclone` are the fastest way to move large amounts of data, but a drag-and-drop interface is often easier for day-to-day file management.
 
-![CephRDS S3 Architecture]({{ "/assets/images/cephrds_architecture.png" | relative_url }})
+CephRDS uses the S3 protocol, so you need an S3-compatible graphical client. You also need your CephRDS Access Key ID and Secret Access Key; see [KB013: Connecting to CephRDS](../kb013-cephrds-onboarding/) for how to request them.
 
-While command-line tools like `rclone` offer maximum performance, many researchers prefer the ease of a visual, drag-and-drop interface for managing their data.
+## Mac and Windows: Cyberduck
 
-Since CephRDS uses the S3 protocol, you must use an S3-compatible graphical client. 
+[Cyberduck](https://cyberduck.io/) is an open-source graphical client for macOS and Windows that Research Computing suggests for CephRDS.
 
-## Mac & Windows: Cyberduck
-[Cyberduck](https://cyberduck.io/) is our officially recommended graphical client for macOS and Windows. It is open-source and well suited for managing S3 connections.
+### Connection settings for Cyberduck
 
-### Connection Settings for Cyberduck:
 1. Open Cyberduck and click **Open Connection**.
-2. From the dropdown at the top, select **Amazon S3**.
+2. From the drop-down at the top, select **Amazon S3**.
 3. **Server:** `rds.ucr.edu`
-4. **Port:** `443` (Ensure the URL shows `https://`)
-5. **Access Key ID:** *Enter your provisioned Ceph Access Key*
-6. **Secret Access Key:** *Enter your provisioned Ceph Secret Key*
+4. **Port:** `443` (the connection should show `https://`)
+5. **Access Key ID:** your CephRDS access key
+6. **Secret Access Key:** your CephRDS secret key
 7. Click **Connect**.
 
+To reuse the connection, save it as a bookmark (**Bookmark** then **New Bookmark**). Cyberduck can store the secret key in your system keychain.
+
 ## Linux: Universal S3 UI (us3ui)
-For Linux users, we recommend **Universal S3 UI (us3ui)**. It is a lightweight, native, and fast open-source client that handles large bucket listings effortlessly.
+
+On Linux, **Universal S3 UI (us3ui)** is a lightweight, open-source desktop client that copes well with large bucket listings.
 
 ### Installation
-You can download the pre-compiled binary for Linux from the [official GitHub repository](https://github.com/pteich/us3ui/releases).
 
-### Connection Settings for us3ui:
-1. Launch the application and click the **+** button to add a new connection.
-2. **Name:** CephRDS (or your preference)
+Download the precompiled Linux binary from the project's [GitHub releases page](https://github.com/pteich/us3ui/releases).
+
+### Connection settings for us3ui
+
+1. Launch the application and click **+** to add a new connection.
+2. **Name:** CephRDS (or any name you like)
 3. **Endpoint:** `rds.ucr.edu`
-4. **Access Key:** *Enter your provisioned Ceph Access Key*
-5. **Secret Key:** *Enter your provisioned Ceph Secret Key*
-6. **Bucket Name:** *Enter your specific bucket name (e.g., your_netid-hdd-bucket)*
-7. **Region:** *(Leave blank)*
-8. **Prefix:** *(Leave blank)*
-9. **Use SSL (HTTPS):** **MUST BE CHECKED**
+4. **Access Key:** your CephRDS access key
+5. **Secret Key:** your CephRDS secret key
+6. **Bucket Name:** your bucket name (for example, `my-lab-bucket`)
+7. **Region:** leave blank
+8. **Prefix:** leave blank
+9. **Use SSL (HTTPS):** this must be checked
 10. Click **Connect**.
+
+## Other options
+
+- To work with a bucket as if it were a local drive, see [KB020: Mounting CephRDS buckets as local drives](../kb020-cephrds-mounting-folders/).
+- To script transfers, see [KB018: Accessing CephRDS with Python (boto3)](../kb018-cephrds-python-boto3/) or the rclone section of [KB013](../kb013-cephrds-onboarding/).
+
+Questions: research-computing@ucr.edu.

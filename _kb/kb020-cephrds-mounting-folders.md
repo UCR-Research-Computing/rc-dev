@@ -3,88 +3,98 @@ title: "Mounting CephRDS Buckets as Local Drives"
 kb_id: KB020
 topic: Storage
 audience: "All Users"
-updated: 2026-05-14
+reviewed: 2026-10-04
 owner: Research Computing
+review_notes:
+  - "Fixed the macFUSE link (macfuse.github.io), noted that Homebrew rclone cannot mount on macOS, and added unmount commands and --log-file for --daemon."
+  - "Toned down claims ('exactly like a local drive', 'maximum performance'); added limits of S3 mounts; used a placeholder bucket name."
+  - "Corrected the remote setup: provider Ceph, and pointed to KB013 for the full prompts. Added a link and a third-party caveat for RcloneView."
+  - "CHECK: RcloneView (rcloneview.com) is a third-party product; confirm Research Computing is happy to mention it."
 redirect_from:
   - /Knowledge_Base/KB020_CephRDS_Mounting_Folders.html
 ---
 
-While graphical clients like Cyberduck (KB019) are great for transferring files, you may want to interact with your CephRDS storage exactly like a USB drive or a local hard drive. This allows you to open, edit, and save files directly from your applications (like Word, Python, or R) into the cloud.
+Graphical clients such as Cyberduck ([KB019](../kb019-cephrds-gui-clients/)) are good for moving files. Sometimes you want your CephRDS bucket to appear as a folder or drive instead, so applications (Word, Python, R) can open and save files in it directly.
 
-This guide explains how to mount your CephRDS buckets as a local drive on all major operating systems using **Rclone**.
+This article explains how to mount a CephRDS bucket as a local drive on Linux, macOS and Windows with **rclone**.
 
----
+## Before you start: what a mount can and cannot do
 
-## 1. Prerequisites (All Operating Systems)
+A mounted bucket looks like a folder, but it is still object storage reached over the network:
 
-Before mounting, you must have `rclone` installed and configured with your CephRDS credentials.
+- Opening and saving files is slower than on a local disk, especially for many small files.
+- Some operations behave differently: renaming a large folder copies every object, and file locking is not supported.
+- Two people editing the same file through separate mounts can overwrite each other's changes.
 
-1. **Get your Keys:** You need your provisioned S3 Access Key and Secret Key for CephRDS (`rds.ucr.edu`).
-2. **Install Rclone:** Download and install the core `rclone` engine from [rclone.org](https://rclone.org/downloads/).
-3. **Configure the Remote:** Run `rclone config` in your terminal to set up a remote named `cephrds`.
-   - When the configuration menu asks for your storage provider, be sure to select **Ceph** (or "Other") rather than "Amazon S3".
-   - Follow the steps in [KB013](../kb013-cephrds-onboarding/) to complete this.
+For bulk transfers, `rclone copy` or `rclone sync` (see [KB013](../kb013-cephrds-onboarding/)) is faster and more reliable than copying into a mount.
 
----
+## 1. Prerequisites (all operating systems)
+
+1. **Get your keys.** You need your CephRDS S3 Access Key ID and Secret Access Key (see [KB013](../kb013-cephrds-onboarding/)).
+2. **Install rclone.** Download it from [rclone.org](https://rclone.org/downloads/).
+3. **Configure a remote.** Run `rclone config` and create a remote named `cephrds`, following the steps in [KB013](../kb013-cephrds-onboarding/). Choose storage type **s3** and provider **Ceph** (not "Amazon S3"), and set the endpoint to `https://rds.ucr.edu`.
+
+In the commands below, replace `my-lab-bucket` with your bucket name.
 
 ## 2. Mounting on Linux
 
-Linux natively supports user-space file systems (FUSE), making mounting extremely simple and robust.
+Linux supports user-space file systems (FUSE), which rclone uses to mount.
 
-### Steps:
-1.  **Ensure FUSE is installed:** (Usually pre-installed on modern distros like Ubuntu). If missing, run `sudo apt install fuse3`.
-2.  **Create a mount point:** This is an empty folder where your files will appear.
+1.  **Make sure FUSE is installed.** It usually is on current distributions. On Ubuntu or Debian, if it is missing, run `sudo apt install fuse3`.
+2.  **Create a mount point.** This is an empty folder where your files appear:
     ```bash
-    mkdir ~/ceph-drive
+    mkdir -p ~/ceph-drive
     ```
-3.  **Run the mount command:** 
+3.  **Mount the bucket:**
     ```bash
-    rclone mount cephrds:your_bucket_name ~/ceph-drive --vfs-cache-mode writes --daemon
+    rclone mount cephrds:my-lab-bucket ~/ceph-drive --vfs-cache-mode writes --daemon --log-file ~/ceph-drive-rclone.log
     ```
-    *Note: The `--vfs-cache-mode writes` flag ensures files are cached locally and uploaded in the background, providing maximum performance.*
+    `--vfs-cache-mode writes` caches files locally while you write them and then uploads them, which most applications need to save files correctly. `--daemon` runs the mount in the background; its messages go to the log file.
 
-Your files are now available in the `~/ceph-drive` directory!
+Your files now appear in `~/ceph-drive`. To unmount:
 
----
+```bash
+fusermount3 -u ~/ceph-drive
+```
+
+(On older systems the command is `fusermount -u`.)
 
 ## 3. Mounting on macOS
 
-To mount drives on macOS, Rclone requires an additional open-source extension called **macFUSE**.
+On macOS, rclone needs the open-source **macFUSE** extension.
 
-### Steps:
-1.  **Install macFUSE:** Download and install it from [macfuse.github.io](https://osxfuse.github.io/). 
-    *(Note: You may need to allow system extensions in your Mac's Security & Privacy settings during installation).*
-2.  **Create a mount point:** Open your Terminal and create an empty folder.
+1.  **Install macFUSE** from [macfuse.github.io](https://macfuse.github.io/). You may need to allow the system extension in **System Settings** under **Privacy & Security** during installation.
+2.  **Use the rclone binary from rclone.org.** The Homebrew build of rclone does not support `mount`.
+3.  **Create a mount point** in Terminal:
     ```bash
-    mkdir ~/Desktop/CephRDS
+    mkdir -p ~/CephRDS
     ```
-3.  **Run the mount command:**
+4.  **Mount the bucket:**
     ```bash
-    rclone mount cephrds:your_bucket_name ~/Desktop/CephRDS --vfs-cache-mode writes --daemon
+    rclone mount cephrds:my-lab-bucket ~/CephRDS --vfs-cache-mode writes --daemon --log-file ~/CephRDS-rclone.log
     ```
 
-You will now see a new volume appear on your Desktop named "CephRDS" that you can browse in Finder.
+The bucket appears as a volume you can browse in Finder. To unmount:
 
----
+```bash
+umount ~/CephRDS
+```
 
 ## 4. Mounting on Windows
 
-Windows requires a proxy file system driver to allow Rclone to create a virtual drive letter (like `Z:\`).
+On Windows, rclone needs a file system driver to create a drive letter (such as `Z:`).
 
-### Steps:
-1.  **Install WinFsp:** Download and install the open-source **Windows File System Proxy (WinFsp)** from [winfsp.dev](https://winfsp.dev/).
-2.  **Run the mount command:** Open Command Prompt or PowerShell. You do not need to create a folder first; Rclone will create a new drive letter automatically.
+1.  **Install WinFsp**, the open-source Windows File System Proxy, from [winfsp.dev](https://winfsp.dev/).
+2.  **Mount the bucket.** Open Command Prompt or PowerShell. You do not need to create a folder first; rclone creates the drive letter:
     ```powershell
-    rclone mount cephrds:your_bucket_name Z: --vfs-cache-mode writes
+    rclone mount cephrds:my-lab-bucket Z: --vfs-cache-mode writes
     ```
-    *(Leave the command prompt window open, or run it via a background script).*
+    Leave the window open while you use the drive. Press Ctrl+C in that window to unmount.
 
-Open File Explorer, and you will see a new `Z:` drive containing your CephRDS data!
+Open File Explorer to find the new `Z:` drive with your CephRDS data.
 
----
+## 5. Graphical alternative (RcloneView)
 
-## 5. Alternative GUI Wrapper (RcloneView)
+If you prefer not to use the command line, [RcloneView](https://rcloneview.com/) is a third-party graphical interface for rclone on Windows and macOS. You can use it to set up the `rds.ucr.edu` endpoint and mount a bucket with a button. It is not run or supported by Research Computing; check its licensing and terms before you rely on it.
 
-If you find configuring the command line intimidating, the community has built a free, graphical interface for Rclone called **RcloneView**. 
-
-It allows you to configure your `rds.ucr.edu` endpoint and click a visual "Mount" button to connect your drives automatically on startup for both Windows and Mac.
+Questions: research-computing@ucr.edu.

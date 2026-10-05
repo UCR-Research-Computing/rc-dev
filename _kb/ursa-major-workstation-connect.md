@@ -2,40 +2,85 @@
 title: "Connecting to an Ursa Major research workstation"
 topic: Cloud
 owner: Research Computing
+reviewed: 2026-10-04
+review_notes:
+  - "Rewrote the console SSH steps (SSH button in VM instances), the RDP section (Windows password reset, IAP tunnel instead of opening port 3389 to the internet) and the gcloud section (added --tunnel-through-iap for VMs without an external IP). Removed padding text."
+  - "Added Tier 2 recharge note, the pre-October 2026 workstation note, and a reminder to stop idle VMs."
+  - "CHECK: whether Ursa Major projects allow external IPs or require IAP for SSH/RDP, so the default advice matches the project network setup."
 redirect_from:
   - /Knowledge_Base/Ursa_Major_Research_Workstations_How_to_Connect.html
 ---
 
-* Open the Google Cloud Platform Console and select your project.
-* In the navigation menu, click on the "Compute Engine" option.
-* In the "Compute Engine" section, click on the "VM instances" option.
-* Find the instance that you want to connect to and click on the instance name to view its details.
-* In the "Connect" section, click on the "SSH" button. This will open the "Connect to instance" dialog box.
-* In the "Connect to instance" dialog box, choose the "Web-based SSH" option and then click the "Connect" button.
-* This will launch a new tab in your web browser and connect you to the instance.
+This guide shows how to connect to a research workstation (a Compute Engine VM) in your Ursa Major project. To create one, see [Launching an Ursa Major research workstation](../ursa-major-workstation-launch/).
 
-### To use RDP to access Ursa Major Research Workstation, follow these steps:
+**Costs:** research workstations are Tier 2. They are recharged to a lab funding source under an MOU. A running VM is charged whether or not you are connected, so stop it when you are done. See [Ursa Major research workstations](../ursa-major-research-workstations/) and [KB005: Ursa Major service tiers](../kb005-ursa-major-service-tiers/).
 
-* Ensure that the virtual machine is set up to allow RDP connections. This will typically involve opening a port on the firewall for RDP traffic and configuring the virtual machine to listen for RDP connections.
+**Workstations set up before October 2026:** some were set up under the earlier tiers, when workstations were not recharged. If your lab has one, contact [research-computing@ucr.edu](mailto:research-computing@ucr.edu). Nothing changes without that conversation.
 
-* On the local machine, install a RDP client. This can be the built-in RDP client on Windows, or a third-party client such as Remmina.
+## SSH from the web console (Linux VMs)
 
-* Open the RDP client and enter the IP address or hostname of the virtual machine. The user will also need to enter their credentials, such as their username and password, to authenticate to the remote machine.
+1. Go to the [Google Cloud console](https://console.cloud.google.com/) and select your project.
+2. Open the navigation menu and select **Compute Engine**, then **VM instances**.
+3. If the VM is stopped, select it and click **Start / Resume**.
+4. In the VM's row, click **SSH** in the **Connect** column.
+5. An SSH-in-browser window opens and connects you to the VM. Allow it a moment to transfer keys the first time.
 
-* If the RDP connection is successful, the user will be able to access the desktop environment of the virtual machine and use it as if they were physically sitting in front of it.
+## SSH with the gcloud command line (Linux VMs)
 
-It is important to note that the user's RDP session will only be active while they have an active RDP connection. If they close the connection, they will no longer be able to access the virtual machine. Additionally, the performance of the RDP connection will be dependent on the network connectivity between the local machine and the virtual machine.
+1. Install the [Google Cloud CLI](https://cloud.google.com/sdk/docs/install), or use Cloud Shell in the console.
+2. Sign in and set your project:
 
-### Connecting to a Ursa Major Research Workstation using the gcloud command line:
+   ```bash
+   gcloud auth login
+   gcloud config set project my-lab-project
+   ```
 
-* Open the command line terminal.
-* Make sure you have the gcloud CLI installed and configured for your Google Cloud Platform project.
-* Run the following command to connect to your instance:
-```bash
-gcloud compute ssh [INSTANCE_NAME] --zone [ZONE_NAME]
-```
-*  Replace `[INSTANCE_NAME]` with the name of your instance and `[ZONE_NAME]` with the zone the instance is in.
-* You will be prompted to authenticate to your Google account if you haven't already.
-* Once authentication is complete, you will be connected to the instance.
+3. Connect:
 
-Note: If you have a firewall rule in place, you may need to configure it to allow access to your instance before you can connect.
+   ```bash
+   gcloud compute ssh INSTANCE_NAME --zone=ZONE
+   ```
+
+   Replace `INSTANCE_NAME` with the VM name and `ZONE` with its zone (for example `us-west2-b`). The first time, gcloud creates an SSH key for you.
+
+4. If the VM has no external IP address, connect through Identity-Aware Proxy (IAP):
+
+   ```bash
+   gcloud compute ssh INSTANCE_NAME --zone=ZONE --tunnel-through-iap
+   ```
+
+   This needs a firewall rule that allows SSH from Google's IAP range. See [Google's IAP TCP forwarding guide](https://cloud.google.com/iap/docs/using-tcp-forwarding).
+
+Google's guide: [Connect to Linux VMs](https://cloud.google.com/compute/docs/connect/standard-ssh).
+
+## Remote desktop (Windows VMs)
+
+1. **Set a Windows password.** In **VM instances**, click the VM name, then **Set Windows password**. Or run:
+
+   ```bash
+   gcloud compute reset-windows-password INSTANCE_NAME --zone=ZONE
+   ```
+
+   Store the password somewhere safe, such as a password manager.
+
+2. **Install an RDP client.** Windows includes Remote Desktop Connection. On macOS, use Microsoft's Windows App. On Linux, use a client such as Remmina.
+
+3. **Connect.** The safer option is an IAP tunnel, which does not open the RDP port to the internet:
+
+   ```bash
+   gcloud compute start-iap-tunnel INSTANCE_NAME 3389 \
+       --local-host-port=localhost:3389 --zone=ZONE
+   ```
+
+   Leave that running, then point your RDP client at `localhost:3389` and sign in with the username and password from step 1. If you use a different local port, connect to that port instead.
+
+   If your VM has an external IP and a firewall rule that allows RDP from your network only, you can connect to that IP directly. Do not open port 3389 to the whole internet.
+
+4. Your session ends when you disconnect, but the VM keeps running (and being charged) until you stop it.
+
+Google's guide: [Connect to Windows VMs](https://cloud.google.com/compute/docs/instances/connecting-to-windows).
+
+## Troubleshooting
+
+- **Connection times out:** check that the VM is running and that a firewall rule allows SSH (port 22) or RDP (port 3389) from your source, or from the IAP range if you use IAP.
+- **Permission denied:** you need a role on the project that allows connecting to VMs. Ask your project owner or [research-computing@ucr.edu](mailto:research-computing@ucr.edu).
