@@ -58,7 +58,7 @@ See [KB007: Ursa Major recharge workflow](../kb007-tier2-recharge-workflow/).
 
 ## Regulated data: the secure research enclave
 
-The [secure research enclave](../../services/secure-enclave/) is a separate, recharged environment for work under NIST SP 800-171 or CMMC Level 2 requirements, including controlled-access data such as NIH dbGaP. It is available after review, an approved data security plan and training.
+The [secure research enclave](../../services/secure-enclave/) is a separate environment, recharged to a grant-funded COA, for work under NIST SP 800-171 or CMMC Level 2 requirements, including controlled-access data such as NIH dbGaP. It is available after review, an approved data security plan and training.
 
 ## When the cloud is not the best fit
 
