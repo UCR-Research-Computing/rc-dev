@@ -28,6 +28,7 @@ glance:
   - {k: "Setup fee", fact: cloud_admin_setup}
   - {k: "Annual fee", fact: cloud_admin_annual}
   - {k: "Usage", v: "Cloud compute and storage used by the project are recharged"}
+  - {k: "Funding", v: "A grant-funded COA is required"}
 cta:
   - {label: "Start a conversation", url: "/help/"}
   - {label: "Read the enclave guide", url: "/kb/kb014-secure-enclave-guide/"}
@@ -41,7 +42,7 @@ The secure research enclave is a NIST SP 800-171 environment in Google Cloud. It
 
 1. **Consultation.** We review your contract, grant or data use agreement with you.
 2. **Data security plan.** You, Research Computing and the ISO write a data security plan that documents the controls for your project.
-3. **Funding and MOU.** You provide a funding source and ITS drafts an MOU for the recharged services.
+3. **Funding and MOU.** You provide a grant-funded funding source (COA) and ITS drafts an MOU for the recharged services.
 4. **Training.** The PI and every authorized user complete the required enclave training before access.
 5. **Provisioning.** A dedicated, isolated workspace is set up for the project.
 

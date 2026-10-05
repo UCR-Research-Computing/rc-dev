@@ -55,7 +55,7 @@ Misuse can lead to suspension or termination of access and resources, and may ha
 
 ## Support
 
-Research Computing offers best-effort support for Ursa Major: help getting started, troubleshooting, and escalation to Google Cloud where needed. Response and resolution times depend on the issue and on team workload. Where an MOU for a project sets out support terms, the MOU applies. Not every problem has a solution, and Google's documentation is a good companion to ours. If an issue is not resolved to your satisfaction, ask for it to be escalated within Research Computing.
+Research Computing offers best-effort support for Ursa Major: help getting started, troubleshooting, and escalation to Google Cloud where needed. Response and resolution times depend on the issue and on team workload. Where an MOU for a project sets out support terms, the MOU applies. Not every problem has a solution, and Google's documentation is a good companion to ours. If an issue is not resolved to your satisfaction, you can escalate it to ITS through the [UCR Support Portal](https://ucrsupport.service-now.com/ucr_portal/) or [ITS Help](https://its.ucr.edu/help).
 
 ## Privacy and data access
 
@@ -81,4 +81,4 @@ Research Computing offers guidance and training on using the cloud securely, inc
 
 ## Stewardship
 
-Research Computing manages Ursa Major: monitoring the service, responding to issues, maintaining the shared configuration, communicating planned changes, and managing Tier 1 allowances and limits. Researchers are responsible for their own data, including backups and disaster recovery where their project needs them. Research Computing can advise on these.
+Research Computing manages Ursa Major: monitoring the service, responding to issues, maintaining the shared configuration, communicating planned changes, and managing Tier 1 allowances and limits. Researchers are responsible for their own data, including backups and disaster recovery. Research Computing does not back up project data. It can advise on backup options.

@@ -49,7 +49,7 @@ Usage is billed at the agreement rates. ITS administrative fees apply: {% includ
 
 ## Cloud credits
 
-Providers run their own research credit programs, for example [Google Cloud for researchers](https://cloud.google.com/edu/researchers) and [AWS research grants](https://aws.amazon.com/grants/). Eligibility, amounts and terms are set by the provider. Research Computing can help you think through an application.
+Both Google and AWS run research credit programs that UCR researchers can apply for: [Google Cloud for researchers](https://cloud.google.com/edu/researchers) and [AWS Cloud Credit for Research](https://aws.amazon.com/government-education/research-and-technical-computing/cloud-credit-for-research/). Eligibility, amounts and terms are set by the provider. Research Computing can help you think through an application.
 
 ## Storage in the cloud
 

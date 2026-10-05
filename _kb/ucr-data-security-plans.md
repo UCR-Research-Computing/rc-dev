@@ -72,7 +72,7 @@ If your grant, contract or DUA requires NIST SP 800-171 or CMMC Level 2 controls
 *   **The UCR secure research enclave**
     *   **Availability:** projects whose agreements require these controls, after review, an approved data security plan and training.
     *   **Description:** a separate, controlled environment in Google Cloud, run by Research Computing with ITS and the ISO. It is designed to support projects that require NIST SP 800-171 controls, including controlled access, monitoring, restricted data transfer and audit logging. Whether it is suitable for a given project is decided in review. See [KB014](../kb014-secure-enclave-guide/) and the [secure research enclave](../../services/secure-enclave/) service page.
-    *   **Cost:** the shared secure infrastructure is currently covered by ITS. The cloud compute and storage the project uses, and the administrative fees, are recharged to a funding source (COA) under an MOU.
+    *   **Cost:** the shared secure infrastructure is currently covered by ITS. The cloud compute and storage the project uses, and the administrative fees, are recharged to a grant-funded COA under an MOU.
 
 ## 4. Next steps
 

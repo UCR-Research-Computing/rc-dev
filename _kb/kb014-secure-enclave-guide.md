@@ -37,7 +37,7 @@ The enclave is for NIST SP 800-171 and CMMC Level 2 work. Other options may suit
 
 1. **Initial consultation.** Contact Research Computing to discuss your project's requirements. We review your contract, grant or data use agreement with you.
 2. **Data security plan.** We work with you and the campus Information Security Office (ISO) on a data security plan that documents the controls and procedures for your project.
-3. **Billing and MOU.** You provide a funding source (COA). ITS drafts an MOU for the recharged services for your review and signature.
+3. **Billing and MOU.** You provide a grant-funded funding source (COA). ITS drafts an MOU for the recharged services for your review and signature.
 4. **Mandatory training.** Before access, the PI and all authorized researchers attend a training session with Research Computing and the ISO. It covers researcher responsibilities, secure access, compute rules, and data transfer rules.
 5. **Provisioning.** Once the MOU is signed and training is complete, ITS sets up a dedicated, isolated workspace for the project.
 6. **Access.** Approved users receive access instructions.
