@@ -27,7 +27,7 @@ Two ground rules apply to everything here. Nautilus is for **non-sensitive data 
 
 A batch job fits when the work has a beginning and an end, and you can write down the command that does it. Some examples from different fields:
 
-| You are... | The job |
+| If you are | The job |
 | :--- | :--- |
 | A historian with 40,000 scanned newspaper pages | Run OCR over the scans in 200 independent chunks and write text files to shared storage |
 | A social scientist with a public corpus of posts | Classify sentiment for each post with a GPU model, one shard of the corpus per task |

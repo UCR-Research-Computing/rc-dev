@@ -140,7 +140,7 @@ In our tests, membership changes reached the cluster in about a minute. A studen
 
 ### When the training ends
 
-| You want to... | Do this | Effect |
+| If you want to | Do this | Effect |
 | :--- | :--- | :--- |
 | Stop new sign-ups (for example after add/drop) | **Revoke** | No new joins. People who already joined keep access until it ends. |
 | End access early | **End now** | No new joins, and attendees are removed up to 15 minutes later. |

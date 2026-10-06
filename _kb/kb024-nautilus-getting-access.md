@@ -28,7 +28,7 @@ Getting onto the National Research Platform (NRP) Nautilus cluster has three lay
 
 What you need depends on how you plan to work. The [researcher guide](../kb023-nautilus-researcher-guide/) compares the options in detail.
 
-| If you want to... | You need | Guide |
+| If you want to | You need | Guide |
 | :--- | :--- | :--- |
 | Run Jupyter notebooks in a browser | Layers 1 and 2 | [KB025](../kb025-nautilus-jupyter-and-coder/) |
 | Use Coder (VS Code, RStudio or a desktop in the browser) | Layers 1 and 2, plus approval from the NRP admins | [KB025](../kb025-nautilus-jupyter-and-coder/) |

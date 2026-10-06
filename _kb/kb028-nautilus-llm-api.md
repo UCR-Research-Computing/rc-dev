@@ -41,7 +41,7 @@ For campus-wide AI tools and UCR guidance on using AI, see [ITS: AI at UCR](http
 
 Each scenario assumes the text or images are public or otherwise non-sensitive.
 
-| You want to... | Use | Section |
+| If you want to | Use | Section |
 | :--- | :--- | :--- |
 | Try a model, draft text, explain code, summarize a public paper | Open WebUI or a desktop chat app | 4 |
 | Label or code thousands of documents (stance, topic, sentiment, genre) | A chat model through the API, in a script | 7.1 |
