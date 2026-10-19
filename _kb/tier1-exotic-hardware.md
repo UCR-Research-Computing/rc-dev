@@ -9,7 +9,7 @@ unlisted: true
 sitemap: false
 review_notes:
   - "Unlisted on purpose (2026-10-19): shared by link with groups Research Computing is already talking to, not announced. Scope gate (Chuck, 2026-10-19): this page describes only hardware the HPCC does not have. It says nothing about general CPU, GPU, high-memory or fast-clock compute, a web portal, the software stack, AI tools on the cluster, or the reason the cluster exists, because those overlap with the HPCC or are internal."
-  - "Examples are TPUs and Arm only, per the standing rule in docs/SPEC.md (Chuck, 2026-10-04); say "Arm processors" with no product name (Chuck, 2026-10-19). Wording follows the live site: "a Research Computing HPC cluster in Google Cloud", and limits set as a budget with work stopping at the cap, as in KB005 (Chuck, 2026-10-19). Checked against the HPCC's hardware list and node sheet on 2026-10-19: no TPU and no Arm nodes. Google lists TPU and Arm machine types in us-central1 (gcloud, 2026-10-19)."
+  - "Examples are TPUs and Arm only, per the standing rule in docs/SPEC.md (Chuck, 2026-10-04); say 'Arm processors' with no product name (Chuck, 2026-10-19). Wording follows the live site: 'a Research Computing HPC cluster in Google Cloud', and limits set as a budget with work stopping at the cap, as in KB005 (Chuck, 2026-10-19). Checked against the HPCC's hardware list and node sheet on 2026-10-19: no TPU and no Arm nodes. Google lists TPU and Arm machine types in us-central1 (gcloud, 2026-10-19)."
   - "No partition for either exists yet, and the Cloud TPU API is not yet enabled in the cluster project, so the page says hardware is set up per project after a consultation and promises no timeline. No prices: use is within limits set per project, as in KB005."
 ---
 
