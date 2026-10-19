@@ -174,6 +174,7 @@ The dev site was built so the switch is one reversible change. Recommended path:
 
 ## 10. History
 
+- 2026-10-19: Tier 1 exotic hardware is for P1 and P2 data (ask first about P3/P4 or contract-covered data), added to KB005 and the Ursa Major service page (Chuck). Unlisted `tier1-exotic-hardware` page shipped to prod with it (section 6.2).
 - 2026-10-19: unlisted `tier1-exotic-hardware` page drafted for review (section 6.2).
 - 2026-10-19: four unlisted RC shared cluster guides published to staging and withdrawn the same day (scope review: Tier 1 exotic hardware only, nothing that overlaps the HPCC).
 - 2026-10-08: unlisted-article mechanism (section 6.2) and the first unlisted article, the AI gateway guide for lab PIs and members, with its printable PDF.
