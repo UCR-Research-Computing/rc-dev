@@ -144,9 +144,9 @@ rds-cli cp gs://my-gcs-bucket/run1/ s3://my-lab-bucket/run1/ -r
 
 The Google side uses your normal Google Cloud sign-in. Run `gcloud auth application-default login` once with your @ucr.edu account first. Files pass through the computer running rds-cli, so for large copies run it on a machine with a fast connection, such as an HPCC node, not a laptop on home Wi-Fi. Google Cloud may charge for data leaving a bucket.
 
-## 6. Using it on HPCC
+## 6. On the HPCC cluster
 
-The HPCC cluster is on the campus network, so it can reach CephRDS directly with no VPN. Install rds-cli in your home directory on a login node with the same `uv tool install` command, then use environment variables (above) in job scripts so the keys are not typed into the script. For a fuller HPCC walk-through, including staging data into a job, see [KB033](../kb033-cephrds-other-languages-and-tools/#using-cephrds-from-the-hpcc-cluster).
+The HPCC is on the campus network, so rds-cli reaches CephRDS there with no VPN. Install it in your home directory with the same `uv tool install` command and use environment variables for your keys. See [KB033](../kb033-cephrds-other-languages-and-tools/#reaching-cephrds-from-the-hpcc-cluster); for running work on the cluster itself, follow the HPCC's own documentation.
 
 ## Troubleshooting
 

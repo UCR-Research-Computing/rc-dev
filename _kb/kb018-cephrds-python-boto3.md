@@ -88,7 +88,7 @@ print("Download complete.")
 
 ## Other options
 
-For a ready-made command-line tool, see [KB032: rds-cli](../kb032-cephrds-rds-cli/). For R, Julia, MATLAB, the AWS CLI and HPCC job scripts, see [KB033](../kb033-cephrds-other-languages-and-tools/).
+For a ready-made command-line tool, see [KB032: rds-cli](../kb032-cephrds-rds-cli/). For R, Julia, MATLAB and the AWS CLI, see [KB033](../kb033-cephrds-other-languages-and-tools/).
 
 ## Security note
 

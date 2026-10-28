@@ -127,7 +127,7 @@ for obj in s3.list_objects_v2(Bucket="my-lab-bucket").get("Contents", []):
 ## More ways to connect
 
 - [KB032: rds-cli](../kb032-cephrds-rds-cli/), a Research Computing command-line tool with CephRDS already set up: quota check, folder uploads, share links, copies to Google Cloud Storage.
-- [KB033: Other languages and tools](../kb033-cephrds-other-languages-and-tools/): the AWS CLI, s5cmd, R, Julia, MATLAB and Go, and using CephRDS from the HPCC cluster.
+- [KB033: Other languages and tools](../kb033-cephrds-other-languages-and-tools/): the AWS CLI, s5cmd, R, Julia, MATLAB and Go, and reaching CephRDS from the HPCC cluster.
 - [KB019: Graphical clients](../kb019-cephrds-gui-clients/) and [KB020: Mounting a bucket as a drive](../kb020-cephrds-mounting-folders/).
 
 ## Getting help
