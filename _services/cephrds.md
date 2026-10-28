@@ -58,7 +58,7 @@ The PI or lab lead requests storage through Research Computing. [KB013: CephRDS 
 - [KB019: CephRDS with Cyberduck and other desktop clients]({{ '/kb/kb019-cephrds-gui-clients/' | relative_url }})
 - [KB020: Mounting CephRDS buckets as local folders with rclone]({{ '/kb/kb020-cephrds-mounting-folders/' | relative_url }})
 - [KB032: The rds-cli command-line tool]({{ '/kb/kb032-cephrds-rds-cli/' | relative_url }})
-- [KB033: Other languages and tools (AWS CLI, R, Julia, MATLAB, Go) and HPCC]({{ '/kb/kb033-cephrds-other-languages-and-tools/' | relative_url }})
+- [KB033: Other languages and tools (AWS CLI, R, Julia, MATLAB, Go)]({{ '/kb/kb033-cephrds-other-languages-and-tools/' | relative_url }})
 
 ## Keep in mind
 

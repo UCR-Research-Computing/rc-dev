@@ -1,19 +1,20 @@
 ---
-title: "Using CephRDS from other languages and tools (AWS CLI, R, s5cmd, Julia, MATLAB) and from HPCC"
+title: "Using CephRDS from other languages and tools (AWS CLI, R, s5cmd, Julia, MATLAB)"
 kb_id: KB033
 topic: Storage
-description: "The same three settings work in every S3 tool: endpoint https://rds.ucr.edu, path-style addressing, any region. Examples for the AWS CLI, s5cmd, R, Julia, MATLAB and Go, plus moving data in and out of HPCC jobs."
+description: "The same three settings work in every S3 tool: endpoint https://rds.ucr.edu, path-style addressing, any region. Examples for the AWS CLI, s5cmd, R, Julia, MATLAB and Go, plus reaching CephRDS from the HPCC cluster."
 audience: "UCR Faculty, Postdocs, Researchers & Students with a CephRDS bucket"
 reviewed: 2026-10-28
 owner: Research Computing
 review_notes:
   - "2026-10-28: new article. Settings taken from KB013/KB018 and from the rds-cli 0.1.13 client (endpoint https://rds.ucr.edu, path-style addressing, no region). Not yet run against rds.ucr.edu."
-  - "CHECK: run each example against a real bucket over the VPN, and the HPCC section from an HPCC login node and a batch job."
+  - "CHECK: run each example against a real bucket over the VPN, and from an HPCC login node."
+  - "2026-10-28: HPCC section cut back to CephRDS access only (no job scripts, partitions, scratch paths or module advice); cluster how-to deferred to HPCC docs per the site scope rule."
   - "CHECK: newer AWS CLI and SDK releases add request checksums that some Ceph gateways reject; confirm whether the when_required settings are needed for rds.ucr.edu."
   - "CHECK: R aws.s3 with region empty and use_https; MATLAB AWS_S3_ENDPOINT without https://; Go UsePathStyle."
 ---
 
-CephRDS speaks the Amazon S3 protocol, so almost any tool or language that can talk to Amazon S3 can talk to CephRDS. You only change where it connects. This page shows the settings once, then short examples for common tools and languages, and how to use CephRDS from the HPCC cluster.
+CephRDS speaks the Amazon S3 protocol, so almost any tool or language that can talk to Amazon S3 can talk to CephRDS. You only change where it connects. This page shows the settings once, then short examples for common tools and languages, and how to reach CephRDS from the HPCC cluster.
 
 For Python, see [KB018](../kb018-cephrds-python-boto3/). For the simplest command-line tool, see [KB032: rds-cli](../kb032-cephrds-rds-cli/). To request storage and keys, see [KB013](../kb013-cephrds-onboarding/).
 
@@ -185,60 +186,26 @@ out, err := client.ListObjectsV2(ctx, &s3.ListObjectsV2Input{Bucket: aws.String(
 
 Other SDKs (Java, JavaScript, C++, Rust) follow the same pattern: set the endpoint override and turn on path-style or "force path style".
 
-## Using CephRDS from the HPCC cluster
+## Reaching CephRDS from the HPCC cluster
 
-The [HPCC cluster](../../services/hpcc/) is on the campus network, so its login and compute nodes reach CephRDS directly, with no VPN. A common pattern is to keep the lab's long-term copy in CephRDS, copy what a job needs to fast cluster storage, run the job, and copy the results back.
+CephRDS and the [HPCC cluster](../../services/hpcc/) are both on the campus network, so you can reach CephRDS from the HPCC with no VPN, using the same tools and settings as anywhere else on this page.
 
-**One-time setup on a login node**
+- **Tools:** rds-cli ([KB032](../kb032-cephrds-rds-cli/)) and rclone both install in your home directory without admin rights. For software already provided on the cluster, and for how to run jobs and where to keep working data, follow the [HPCC documentation](https://hpcc.ucr.edu/manuals/), which is the authority for the cluster.
+- **Keys:** keep them in a file only you can read and load it with `source`, rather than typing them into scripts:
 
-1. Install a tool in your home directory. rclone and rds-cli both install without admin rights:
+  ```bash
+  mkdir -p ~/.cephrds && chmod 700 ~/.cephrds
+  cat > ~/.cephrds/env <<'EOF'
+  export AWS_ACCESS_KEY_ID="your-access-key"
+  export AWS_SECRET_ACCESS_KEY="your-secret-key"
+  EOF
+  chmod 600 ~/.cephrds/env
+  source ~/.cephrds/env
+  ```
 
-   ```bash
-   uv tool install git+https://github.com/UCR-Research-Computing/rds-cli.git
-   # or download the rclone Linux binary from rclone.org into ~/bin
-   ```
+- **Typical use:** copy what you need from your bucket at the start of your work and copy results back at the end (for example `rds-cli download ... -r` and `rds-cli upload ...`), rather than reading many small files from CephRDS while a job runs.
 
-   Check first whether the HPCC already provides rclone as a module (`module avail rclone`).
-
-2. Store your keys in a file only you can read:
-
-   ```bash
-   mkdir -p ~/.cephrds && chmod 700 ~/.cephrds
-   cat > ~/.cephrds/env <<'EOF'
-   export AWS_ACCESS_KEY_ID="your-access-key"
-   export AWS_SECRET_ACCESS_KEY="your-secret-key"
-   EOF
-   chmod 600 ~/.cephrds/env
-   ```
-
-**In a batch job**
-
-```bash
-#!/bin/bash
-#SBATCH --job-name=cephrds-example
-#SBATCH --time=02:00:00
-#SBATCH --cpus-per-task=4
-#SBATCH --mem=16G
-
-source ~/.cephrds/env
-WORK=/path/to/your/scratch/$SLURM_JOB_ID     # use your HPCC scratch or bigdata path
-mkdir -p "$WORK/input" "$WORK/output"
-
-# 1. Bring the input down from CephRDS
-rds-cli download study1/input/ -b my-lab-bucket -r -d "$WORK/input/"
-
-# 2. Run the analysis on local cluster storage
-my_analysis --in "$WORK/input" --out "$WORK/output"
-
-# 3. Send the results back to CephRDS
-rds-cli upload "$WORK/output/" -b my-lab-bucket -k study1/results/$SLURM_JOB_ID/
-```
-
-The same steps work with `rclone copy` or the AWS CLI. Tips:
-
-- **Move data in bulk.** Copy what the job needs at the start rather than reading many small files from CephRDS during the run. Computation runs faster on cluster storage.
-- **Large transfers belong in a job**, not on a login node, unless they are short.
-- **Keep the keys file private** (`chmod 600`). Anyone who can read it can use your bucket.
+Questions about the HPCC itself go to the HPCC team; questions about CephRDS, your bucket or your keys go to Research Computing.
 
 ## Troubleshooting
 
