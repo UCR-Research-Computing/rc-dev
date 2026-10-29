@@ -30,7 +30,7 @@ The portal's **Jupyter** app starts **JupyterLab** on a compute node, as a Slurm
 | Field | What to choose |
 | --- | --- |
 | **Python environment** | Which Python is loaded (table below). Most people want **python-sci**. |
-| **Partition** | **standard** (16 cores, 124 GB per node) for most work; **gpul4** (8 cores and one NVIDIA L4 GPU with 24 GB) for PyTorch and other GPU code; **highmem** (32 cores, 496 GB) for very large in-memory data. |
+| **Partition** | **standard** (16 cores, 124 GB per node) for most work; **gpul4** (8 cores and one NVIDIA L4 GPU with 24 GB) for PyTorch and other GPU code; **gpu1v1** (4 cores and an NVIDIA V100 GPU with 16 GB), for labs with access to it; **highmem** (32 cores, 496 GB) for very large in-memory data. |
 | **Cores** | How many cores your notebook can use. 4 is plenty for exploring; ask for more only for parallel code. Do not exceed the partition's cores (16, 8 or 32). |
 | **Number of hours** | How long the session may run, up to 24. It stops at the end, even mid-calculation, so save often. |
 | **I would like to receive an email when the session starts** | Handy when a GPU node takes a few minutes to start. |
@@ -39,7 +39,7 @@ The portal's **Jupyter** app starts **JupyterLab** on a compute node, as a Slurm
 
 ![A queued Jupyter session card: the job is waiting for its compute node to start](../../assets/images/ursa-portal/jupyter-queued.png)
 
-**Queued** means the compute node is starting. Nodes power down when idle, so allow about a minute and a half on **standard**, and several minutes on **gpul4** (in our test, about six) because GPU nodes start from scratch and depend on Google having L4 capacity. Then the card turns green:
+**Queued** means the compute node is starting. Nodes power down when idle, so allow about a minute and a half on **standard**, and several minutes on **gpul4** or **gpu1v1** (in our test, about six) because GPU nodes start from scratch and depend on Google having L4 capacity. Then the card turns green:
 
 ![A running Jupyter session card showing the host, time remaining and session ID, with the Connect to Jupyter button](../../assets/images/ursa-portal/jupyter-running.png)
 
@@ -52,7 +52,7 @@ The portal's **Jupyter** app starts **JupyterLab** on a compute node, as a Slurm
 | **python-sci 2026.10** | numpy, scipy, pandas, matplotlib, scikit-learn, statsmodels, xarray, astropy and astronomy tools, and more | standard or highmem |
 | **python-sci 2026.09** | The previous release of the same, for reproducing older results | standard or highmem |
 | **python-gw 2026.10** | Gravitational-wave tools: LIGO LAL, Bilby, PyCBC, GWpy | standard |
-| **python-ml 2026.09** | PyTorch with CUDA, for machine learning | **gpul4** (the GPU) |
+| **python-ml 2026.09** | PyTorch with CUDA, for machine learning | **gpul4** or **gpu1v1** (a GPU) |
 
 To see exactly what is in an environment, run `%pip list` in a notebook cell, or `module show python-sci/2026.10` in a terminal. The same environments are available in batch jobs with `module load`, so code you write in a notebook runs unchanged in a batch script.
 
@@ -112,17 +112,17 @@ with ProcessPoolExecutor(max_workers=n) as pool:
 
 ## Using the GPU
 
-Choose **python-ml** and partition **gpul4**. Then check the GPU from a notebook:
+Choose **python-ml** and partition **gpul4** (or **gpu1v1** if your lab uses the V100s). Then check the GPU from a notebook:
 
 ```python
 import torch
 print(torch.cuda.is_available())          # True
-print(torch.cuda.get_device_name(0))      # NVIDIA L4
+print(torch.cuda.get_device_name(0))      # NVIDIA L4 (or Tesla V100-SXM2-16GB)
 x = torch.randn(8192, 8192, device="cuda")
 print((x @ x).sum().item())
 ```
 
-In a JupyterLab terminal, `nvidia-smi` shows the GPU's memory and use. The L4 has 24 GB; if you run out of GPU memory, reduce the batch size or restart the kernel to free memory held by old tensors.
+In a JupyterLab terminal, `nvidia-smi` shows the GPU's memory and use. The L4 has 24 GB and the V100 16 GB; if you run out of GPU memory, reduce the batch size or restart the kernel to free memory held by old tensors.
 
 ## Your own packages and kernels
 
@@ -188,7 +188,7 @@ Closing the JupyterLab tab does **not** stop the session: it keeps running, and 
 
 | What you see | What to do |
 | --- | --- |
-| The card stays **Queued** for a long time | Normal for up to a few minutes, longer on gpul4. If it is over 15 minutes, see [Troubleshooting](../ursa-portal-troubleshooting/). |
+| The card stays **Queued** for a long time | Normal for up to a few minutes, longer on the GPU partitions. If it is over 15 minutes, see [Troubleshooting](../ursa-portal-troubleshooting/). |
 | The card goes straight to **Completed** | The session failed to start. Click the **Session ID** link on the card and open `output.log`; the reason is near the end. |
 | "Kernel error" or the kernel keeps restarting | Often a `--user` package clashing with the environment. Try `pip uninstall --user PACKAGE`, or move it into a venv as above. |
 | Notebook runs out of memory (kernel dies) | Ask for **highmem**, or more cores on standard (memory is shared out with cores), or load data in chunks. |

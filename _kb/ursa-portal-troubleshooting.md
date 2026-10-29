@@ -51,12 +51,12 @@ On Windows, `netstat -ano | findstr 8443` shows the process ID; end it in Task M
 ## Sessions (Desktop and Jupyter)
 
 **The card stays "Queued".**
-* Normal: about a minute and a half on standard; several minutes on **gpul4** (GPU nodes start from scratch and depend on Google having L4 capacity).
+* Normal: about a minute and a half on standard; several minutes on **gpul4** and **gpu1v1** (GPU nodes start from scratch and depend on Google having GPU capacity).
 * Over 15 minutes: check what Slurm says. Over SSH or from a desktop terminal, `squeue --me` shows the reason in the last column. `(Resources)` or `(Priority)` means waiting its turn; `(ReqNodeNotAvail)` or a launch failure means the cloud couldn't provide a node right now, which happens for GPUs. Delete the session and try again later, or use standard if you don't need the GPU.
 * An AI assistant connected to the cluster can explain it too: "why is job 1234 pending?" (see [Use it from an AI assistant](../ursa-portal-ai-assistant/)).
 
 **The card goes straight to "Completed", or says the session failed.** Something stopped the session starting. Click the **Session ID** link on the card; the file browser opens the session folder. Open `output.log` and read the last lines. Common causes:
-* Asking for more cores than the partition has (16 on standard, 8 on gpul4, 32 on highmem).
+* Asking for more cores than the partition has (16 on standard, 8 on gpul4, 4 on gpu1v1, 32 on highmem).
 * A broken shell start-up file: something in `~/.bashrc` that prints text, waits for input, or starts conda's base environment. Comment it out and relaunch.
 * A full home directory. Check with `ursa-status` or `du -sh ~/* | sort -h` and clear space.
 
@@ -76,7 +76,7 @@ On Windows, `netstat -ano | findstr 8443` shows the process ID; end it in Task M
 
 **The kernel dies or restarts during a big calculation.** Usually out of memory. Memory comes with cores (about 7.9 GB per core on standard), so ask for more cores, use **highmem**, or process data in pieces.
 
-**`torch.cuda.is_available()` is False.** You are not on **gpul4**, or not using **python-ml**. Launch a new session with both.
+**`torch.cuda.is_available()` is False.** You are not on a GPU partition (**gpul4** or **gpu1v1**), or not using **python-ml**. Launch a new session with both.
 
 ## Desktop
 
@@ -88,7 +88,7 @@ On Windows, `netstat -ano | findstr 8443` shows the process ID; end it in Task M
 
 **Copy and paste doesn't work.** Use the clipboard box in the noVNC side panel; see [Remote Linux desktop](../ursa-portal-desktop/#copy-and-paste).
 
-**A 3D program is slow, or fails with an OpenGL or GLX error.** On a **gpul4** desktop, start it with `vglrun -d egl program`. Plain `vglrun` (without `-d egl`) fails on these nodes with an error about opening a display. On standard and highmem there is no GPU; launch a gpul4 desktop.
+**A 3D program is slow, or fails with an OpenGL or GLX error.** On a **gpul4** or **gpu1v1** desktop, start it with `vglrun -d egl program`. Plain `vglrun` (without `-d egl`) fails on these nodes with an error about opening a display. On standard and highmem there is no GPU; launch a gpul4 desktop.
 
 ## Files and jobs
 
