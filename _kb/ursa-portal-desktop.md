@@ -14,6 +14,7 @@ review_notes:
   - "Run end to end on 2026-10-29: standard-partition desktop (form, queued and running cards, XFCE in noVNC, Applications menu, terminal running whereami.sh), then a gpul4 desktop where nvidia-smi showed the NVIDIA L4 and 'vglrun -d egl glxinfo -B' reported the L4 as the OpenGL renderer. Screenshots are from those sessions with the user name replaced by netid."
   - "On 2026-10-29 plain 'vglrun' (no -d egl) failed on gpul4 because the node has no 3D X server; the page shows 'vglrun -d egl'. The app's own description was corrected the same day."
   - "The gpul4 node took about six minutes to start on 2026-10-29; standard took about a minute and a half."
+  - "gpu1v1 (V100, Chang lab) added to the Desktop and Jupyter forms 2026-10-29 and tested the same day: a gpu1v1 desktop started in about six minutes; nvidia-smi showed Tesla V100-SXM2-16GB and 'vglrun -d egl glxinfo -B' reported the V100 as the OpenGL renderer."
 ---
 
 This is part 4 of the portal series. If you have not connected yet, start with [Getting connected](../ursa-portal-getting-started/).
@@ -21,7 +22,7 @@ This is part 4 of the portal series. If you have not connected yet, start with [
 The portal's **Desktop** app starts a complete Linux desktop (XFCE) on a compute node and shows it in your browser tab. Nothing to install: any computer with a browser and the tunnel can use it, including a laptop on a hotel network. It is the easiest way to:
 
 * run **graphical programs** on the cluster: molecular viewers (VMD), GaussView-style tools, R and Python plotting windows, image viewers, file managers;
-* use a **GPU for 3D visualization** on a gpul4 node;
+* use a **GPU for 3D visualization** on a GPU node (gpul4, or gpu1v1 for labs with V100 access);
 * have a **terminal on a compute node** for hours of interactive work, which keeps running if your laptop sleeps or your Wi-Fi drops.
 
 The desktop is a Slurm job like any other. It has the cores (and GPU) you ask for, all to yourself, and counts against your lab's allocation while it runs.
@@ -35,13 +36,13 @@ The desktop is a Slurm job like any other. It has the cores (and GPU) you ask fo
 
 | Field | What to choose |
 | --- | --- |
-| **Partition** | **standard** (16 cores, 124 GB) for most work; **gpul4** (8 cores and an NVIDIA L4 GPU) for 3D graphics or GPU computing; **highmem** (32 cores, 496 GB) for very large data. |
+| **Partition** | **standard** (16 cores, 124 GB) for most work; **gpul4** (8 cores and an NVIDIA L4 GPU) for 3D graphics or GPU computing; **gpu1v1** (4 cores and an NVIDIA V100 GPU), only for labs with access to it, such as the Chang lab; **highmem** (32 cores, 496 GB) for very large data. |
 | **Cores** | 4 is plenty for viewing and light work. Memory comes with cores (about 7.9 GB per core on standard), so ask for more cores if a program needs more memory. |
 | **Number of hours** | Up to 24. The desktop closes when the time is up, so save your work before then. |
 | **Resolution** | The desktop's size in pixels. Pick something near your screen's size, such as `1920x1080`, or `1440x900` on a laptop. You can change how it is scaled after connecting. |
-| **Email when the session starts** | Handy for gpul4, which takes longer to start. |
+| **Email when the session starts** | Handy for the GPU partitions, which take longer to start. |
 
-For a GPU desktop, choose **gpul4** and up to **8** cores:
+For a GPU desktop, choose **gpul4** and up to **8** cores (or **gpu1v1** and up to **4** cores if your lab uses the V100s):
 
 ![The Desktop form with partition gpul4 (8 cores plus NVIDIA L4 GPU) and 8 cores selected](../../assets/images/ursa-portal/desktop-form-gpu.png)
 
@@ -49,7 +50,7 @@ For a GPU desktop, choose **gpul4** and up to **8** cores:
 
 ![A queued Desktop session card while the compute node starts](../../assets/images/ursa-portal/desktop-queued.png)
 
-**Queued** means the node is starting: about a minute and a half on standard, several minutes on gpul4 (about six in our test; GPU nodes start from scratch and depend on Google having L4 capacity). When it is ready the card turns green:
+**Queued** means the node is starting: about a minute and a half on standard, several minutes on gpul4 and gpu1v1 (about six in our tests; GPU nodes start from scratch and depend on Google having L4 capacity). When it is ready the card turns green:
 
 ![A running Desktop card showing the compute node host, time remaining, compression and image quality sliders, the Launch Desktop button and a view-only link](../../assets/images/ursa-portal/desktop-running.png)
 
@@ -96,7 +97,7 @@ echo "Cores:      $(nproc)"
 echo "Memory:     $(free -g | awk '/Mem:/{print $2}') GB on the node"
 command -v nvidia-smi >/dev/null \
   && nvidia-smi --query-gpu=name,memory.total --format=csv,noheader \
-  || echo "GPU:        none (pick gpul4 for an NVIDIA L4)"
+  || echo "GPU:        none (pick a GPU partition: gpul4 or gpu1v1)"
 ```
 
 `nproc` shows the cores Slurm gave you (4 here), not all the cores in the node. From this terminal you can also submit and watch batch jobs (`sbatch`, `squeue --me`), use `git`, and start any program.
@@ -118,9 +119,9 @@ python -c "import matplotlib.pyplot as plt; plt.plot([1,4,9]); plt.show()"
 
 Search for anything else with **Clusters > Module Browser** in the portal or `module spider NAME` (see [Files and jobs](../ursa-portal-files-and-jobs/#module-browser-find-software)).
 
-## GPU visualization (gpul4)
+## GPU visualization (gpul4 and gpu1v1)
 
-On a **gpul4** desktop the node has an NVIDIA L4 GPU. Programs that draw 3D graphics with OpenGL (VMD, ParaView, PyMOL, ChimeraX and similar) use it when started through **VirtualGL** with `vglrun -d egl`:
+On a **gpul4** desktop the node has an NVIDIA L4 GPU; on **gpu1v1** it has an NVIDIA Tesla V100. Programs that draw 3D graphics with OpenGL (VMD, ParaView, PyMOL, ChimeraX and similar) use it when started through **VirtualGL** with `vglrun -d egl`:
 
 ```bash
 module load vmd
@@ -140,6 +141,7 @@ glxinfo -B | grep "OpenGL renderer"
 
 vglrun -d egl glxinfo -B | grep "OpenGL renderer"
 #  OpenGL renderer string: NVIDIA L4/PCIe/SSE2      <- the GPU
+#  (on gpu1v1: Tesla V100-SXM2-16GB/PCIe/SSE2)
 ```
 
 The GPU is also there for computing: CUDA programs, PyTorch (`module load python-ml`) and GPU builds of simulation codes work from the desktop terminal without `vglrun`. For long GPU runs, a batch job is better than a desktop (see [Files and jobs](../ursa-portal-files-and-jobs/)).
@@ -171,11 +173,11 @@ Keyboard shortcuts your own computer uses (such as Cmd+Tab on a Mac or Alt+Tab o
 
 | What you see | What to do |
 | --- | --- |
-| The card stays **Queued** for a long time | Normal for a few minutes, longer on gpul4. Over 15 minutes, see [Troubleshooting](../ursa-portal-troubleshooting/). |
+| The card stays **Queued** for a long time | Normal for a few minutes, longer on gpul4 and gpu1v1. Over 15 minutes, see [Troubleshooting](../ursa-portal-troubleshooting/). |
 | The card goes straight to **Completed** | The desktop failed to start. Click the card's **Session ID** link and open `output.log`. |
 | Grey or black screen in the browser | Wait ten seconds, then reload the tab. If it persists, close the tab and click **Launch Desktop** again. |
 | Very slow or blurry | Raise compression and lower quality on the card, then relaunch the desktop tab. |
-| A 3D program is slow or says no OpenGL | On gpul4, start it with `vglrun -d egl`. On standard there is no GPU; use gpul4. |
+| A 3D program is slow or says no OpenGL | On gpul4 or gpu1v1, start it with `vglrun -d egl`. On standard there is no GPU; use a GPU partition. |
 
 More fixes are in [Troubleshooting](../ursa-portal-troubleshooting/).
 
