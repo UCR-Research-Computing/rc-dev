@@ -90,7 +90,7 @@ import matplotlib.pyplot as plt
 fig, ax = plt.subplots(figsize=(8, 3))
 ax.plot(df.time_s, df.temperature_c, lw=0.8, label="raw")
 ax.plot(df.time_s, df.temperature_c.rolling(15, center=True).mean(), lw=2, label="15-point mean")
-ax.set_xlabel("time (s)"); ax.set_ylabel("temperature (°C)"); ax.legend()
+ax.set_xlabel("time (s)"); ax.set_ylabel("temperature (deg C)"); ax.legend()
 os.makedirs("results", exist_ok=True)
 fig.savefig("results/temperature.png", dpi=150, bbox_inches="tight")
 ```

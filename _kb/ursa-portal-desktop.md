@@ -59,8 +59,8 @@ For a GPU desktop, choose **gpul4** and up to **8** cores:
 
 The sliders trade picture sharpness for speed:
 
-* On a fast connection (campus, home fiber), set **compression low** (0–2) and **image quality high** (8–9) for crisp text.
-* On a slow or distant connection (hotel, phone hotspot), set **compression high** (6–9) and **image quality lower** (3–5); it stays responsive.
+* On a fast connection (campus, home fiber), set **compression low** (0-2) and **image quality high** (8-9) for crisp text.
+* On a slow or distant connection (hotel, phone hotspot), set **compression high** (6-9) and **image quality lower** (3-5); it stays responsive.
 
 They apply each time you click **Launch Desktop**, so close the desktop tab and relaunch from the card to try other settings. The session itself keeps running.
 
