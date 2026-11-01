@@ -186,6 +186,7 @@ A five-model, five-lens review of every page, card and public PDF (report and ve
 
 ## 10. History
 
+- 2026-11-01: cluster portal series synced with the day's cluster changes: per-partition core limits incl. gpu1v1 (the forms now enforce them), PyTorch builds for the V100 (cu126 yes, cu128/cu130 no; tested), lab-only partitions in the account/partition error, `ursa-status` showing accounts and permitted partitions, new V100 example and `mkdir -p logs` for array examples. Staging only; the series is not on prod.
 - 2026-10-29: unlisted cluster portal series (six guides with screenshots) for pilot labs on the cluster (section 6.2).
 - 2026-10-22: wording review fixes (section 4.6), shipped to prod first (PR #66), copied here.
 

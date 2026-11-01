@@ -3,7 +3,7 @@ title: "Research Computing cluster portal: troubleshooting"
 topic: Cloud
 description: "Fixes for the problems people hit with the Research Computing HPC cluster's web portal: the tunnel, sign-in, certificate warnings, sessions that stay queued or end at once, Jupyter kernels, desktop display, GPU graphics and the shell. Part 6 of the portal guide series."
 audience: "Members of labs that Research Computing has set up on its HPC cluster in Google Cloud"
-reviewed: 2026-10-29
+reviewed: 2026-11-01
 owner: Research Computing
 unlisted: true
 sitemap: false
@@ -13,6 +13,7 @@ review_notes:
   - "Unlisted on purpose (2026-10-29): see the first article in this series for the audience and mechanism."
   - "Built from what was hit while testing the series on 2026-10-29 (Jupyter kernel cross-origin block, since fixed; vglrun needing -d egl; Shell Access permission denied; gpul4 start time; JupyterLab not drawing in a background browser tab) plus the portal's standard failure modes."
   - "Remove the Shell Access section when the portal shell is fixed."
+  - "2026-11-01: account/partition error now names the lab-only partitions (amd112, amd56 Mueller; gpu1v1 Chang, Slurm AllowAccounts) and points at ursa-status, which lists the user's accounts and permitted partitions (checked live)."
 ---
 
 This is part 6 of the portal series. Start with [Getting connected](../ursa-portal-getting-started/) if you have not used the portal before.
@@ -98,7 +99,7 @@ On Windows, `netstat -ano | findstr 8443` shows the process ID; end it in Task M
 
 **My job isn't in Active Jobs.** It has finished; Active Jobs shows only queued and running jobs. Look for its output file, or run `sacct -u $USER --starttime today` over SSH.
 
-**`sbatch: error: Batch job submission failed: Invalid account or account/partition combination`.** Your Slurm account isn't set up for that partition. Email us with the job script.
+**`sbatch: error: Batch job submission failed: Invalid account or account/partition combination`.** Your Slurm account can't use that partition. Some partitions belong to one lab: **amd112** and **amd56** to the Mueller lab, **gpu1v1** to the Chang lab. On the login node, `ursa-status` lists your accounts and the partitions you may use. If one is missing that you should have, email us with the job script.
 
 **My job got only one core.** On shared partitions a job gets one core unless it asks: add `#SBATCH --cpus-per-task=N`.
 

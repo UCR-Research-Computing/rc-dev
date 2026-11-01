@@ -3,7 +3,7 @@ title: "Research Computing cluster portal: Jupyter notebooks"
 topic: Cloud
 description: "Start JupyterLab on a compute node of the Research Computing HPC cluster from the web portal: choose a Python environment, cores, a GPU, and hours; open notebooks and terminals; add your own packages and kernels; and stop the session cleanly. Part 3 of the portal guide series."
 audience: "Members of labs that Research Computing has set up on its HPC cluster in Google Cloud"
-reviewed: 2026-10-29
+reviewed: 2026-11-01
 owner: Research Computing
 unlisted: true
 sitemap: false
@@ -14,6 +14,7 @@ review_notes:
   - "Run end to end on 2026-10-29: form, queued and running cards, JupyterLab on ucrslurmcl-stdnodeset-0 with python-sci/2026.10, the example notebook executed (node, Slurm job, 4 cores, pandas describe, matplotlib plot). Screenshots are from that session with the user name replaced by netid."
   - "That run found that notebooks could not start a kernel (Jupyter's cross-origin check rejected the proxied requests); fixed the same day in the app template (allow_origin set to the portal's own origin) and re-tested."
   - "The venv + ipykernel recipe was run on the login node on 2026-10-29 with python-sci/2026.10 (tabulate installed into a --system-site-packages venv, kernel registered, then removed)."
+  - "2026-11-01 sync with cluster changes: core limits per partition incl. gpu1v1 (the form now enforces them, ucr-slurm-production PR #33); V100 PyTorch note from test job 1621 (python-ml 2.5.1 and PyPI cu126 run on sm_70; cu128 and cu130 fail with no kernel image). The form again preselects python-sci 2026.10, matching the screenshots."
 ---
 
 This is part 3 of the portal series. If you have not connected yet, start with [Getting connected](../ursa-portal-getting-started/).
@@ -31,7 +32,7 @@ The portal's **Jupyter** app starts **JupyterLab** on a compute node, as a Slurm
 | --- | --- |
 | **Python environment** | Which Python is loaded (table below). Most people want **python-sci**. |
 | **Partition** | **standard** (16 cores, 124 GB per node) for most work; **gpul4** (8 cores and one NVIDIA L4 GPU with 24 GB) for PyTorch and other GPU code; **gpu1v1** (4 cores and an NVIDIA V100 GPU with 16 GB), for labs with access to it; **highmem** (32 cores, 496 GB) for very large in-memory data. |
-| **Cores** | How many cores your notebook can use. 4 is plenty for exploring; ask for more only for parallel code. Do not exceed the partition's cores (16, 8 or 32). |
+| **Cores** | How many cores your notebook can use. 4 is plenty for exploring; ask for more only for parallel code. The most you can ask for is the partition's cores per node: 16 on standard, 8 on gpul4, 4 on gpu1v1, 32 on highmem. The form stops you going over. |
 | **Number of hours** | How long the session may run, up to 24. It stops at the end, even mid-calculation, so save often. |
 | **I would like to receive an email when the session starts** | Handy when a GPU node takes a few minutes to start. |
 
@@ -155,6 +156,14 @@ rm -rf ~/envs/myproject
 ```
 
 **Conda or pixi environments** work the same way: create the environment, install `ipykernel` into it, and run `python -m ipykernel install --user --name ...` from inside it. Put large environments in `/scratch/NETID_ucr_edu` rather than home.
+
+**Your own PyTorch on the V100 (gpu1v1).** The cluster's **python-ml** runs on the V100 as it is. If you install PyTorch yourself, use the CUDA 12.6 builds:
+
+```bash
+pip install torch --index-url https://download.pytorch.org/whl/cu126
+```
+
+The newer CUDA 12.8 and 13.0 builds no longer include the V100, and fail on it with `no kernel image is available for execution on the device`. On gpul4 (L4) any current build works.
 
 **Something else entirely** (R, Julia, a container): ask Research Computing; several are installed as modules (`module spider r`), and Apptainer runs containers (`module load apptainer`).
 

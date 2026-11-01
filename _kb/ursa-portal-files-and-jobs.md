@@ -3,7 +3,7 @@ title: "Research Computing cluster portal: files and jobs"
 topic: Cloud
 description: "Use the cluster web portal's file browser, editor, Active Jobs page, Job Composer and module browser: upload and download data, edit a batch script, submit it, watch it run and find software. Part 2 of the portal guide series."
 audience: "Members of labs that Research Computing has set up on its HPC cluster in Google Cloud"
-reviewed: 2026-10-29
+reviewed: 2026-11-01
 owner: Research Computing
 unlisted: true
 sitemap: false
@@ -13,6 +13,7 @@ review_notes:
   - "Unlisted on purpose (2026-10-29): see the first article in this series for the audience and mechanism."
   - "File browser, editor, row menus, Active Jobs, Job Composer and module browser were used on 2026-10-29 against the live portal (Open OnDemand 4.2.5); screenshots are from that session with the user name replaced by netid. The example batch script was submitted and ran on the standard partition that day."
   - "CHECK: the size limit for browser uploads is set by the portal's web server and was not measured; the page recommends scp/rsync or Globus-style tools for large data instead of naming a limit."
+  - "2026-11-01: /apps/examples now has 13 templates incl. 13-gpu-v100; array examples need logs/ created first (Slurm does not create output folders; examples 05 and 09 say so, tested as jobs 1622)."
 ---
 
 This is part 2 of the portal series. If you have not connected yet, start with [Getting connected](../ursa-portal-getting-started/).
@@ -130,7 +131,7 @@ squeue --me                  # your queued and running jobs
 
 When it finishes, **Refresh** the `results` folder and **View** `hello-ursa-1609.out`. It contains the compute node's name and the numpy version. For a finished job, `seff 1609` over SSH shows how much of the requested time and cores it used.
 
-More templates (OpenMP, MPI, GPU, job arrays, GROMACS, containers, BLAST, Spot) are in `/apps/examples` on the cluster: browse there with **Change directory**, select one and **Copy/Move** it into your own folder.
+More templates (OpenMP, MPI, GPU, job arrays, GROMACS, containers, BLAST, Spot, and a V100 example for the Chang lab) are in `/apps/examples` on the cluster: browse there with **Change directory**, select one and **Copy/Move** it into your own folder. The job-array examples write their logs to a `logs` folder, which Slurm does not create: make it first (**New Directory** in the file browser, or `mkdir -p logs`), or the jobs fail without writing any output.
 
 ## Active Jobs: see and cancel your jobs
 

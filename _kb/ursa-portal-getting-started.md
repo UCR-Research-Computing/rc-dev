@@ -3,7 +3,7 @@ title: "Research Computing cluster portal: getting connected"
 topic: Cloud
 description: "Reach the web portal of the Research Computing HPC cluster in Google Cloud from your own computer: install the Google Cloud CLI, open the secure tunnel, sign in with your UCR account, and find your way around. Part 1 of the portal guide series."
 audience: "Members of labs that Research Computing has set up on its HPC cluster in Google Cloud"
-reviewed: 2026-10-29
+reviewed: 2026-11-01
 owner: Research Computing
 unlisted: true
 sitemap: false
@@ -14,6 +14,7 @@ review_notes:
   - "Every step was run on 2026-10-29 against the live portal (Open OnDemand 4.2.5) from macOS in a UCR account: tunnel on local port 8443, Google sign-in, dashboard, menus. Screenshots are from that session; the user name in them is replaced with the placeholder netid."
   - "The portal's 'Shell Access' menu item returned 'Permission denied (publickey, ...)' on 2026-10-29; this page tells readers to use SSH or a Desktop terminal instead. Remove that note when it is fixed."
   - "CHECK: the Windows steps (same gcloud commands in PowerShell or the Google Cloud SDK Shell) were not run on Windows. The ursa-ood helper is a bash script for macOS and Linux."
+  - "2026-11-01: ursa-status line updated; it now prints the user's Slurm accounts and permitted partitions (checked live on the login node)."
 ---
 
 Research Computing runs an HPC cluster in Google Cloud for labs it has set up on it. Besides the usual SSH login, the cluster has a **web portal** built on [Open OnDemand](https://openondemand.org/), the same portal software many university HPC centers use. From a web browser you can:
@@ -157,7 +158,7 @@ gcloud compute ssh ucrslurmcl-slurm-login-001 --zone us-central1-a \
 
 The first time, gcloud creates an SSH key for you and may ask for a passphrase. A file you upload in the portal is immediately visible over SSH, and a job you submit with `sbatch` over SSH shows up under **Jobs > Active Jobs**.
 
-On the login node, `ursa-status` shows the partitions, your jobs and your storage, and `/apps/docs/QUICKSTART.md` is the cluster's own quick reference.
+On the login node, `ursa-status` shows the partitions, your Slurm accounts and which partitions they let you use, your jobs and your storage, and `/apps/docs/QUICKSTART.md` is the cluster's own quick reference.
 
 ## Finishing up
 
