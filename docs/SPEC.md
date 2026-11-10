@@ -186,7 +186,7 @@ A five-model, five-lens review of every page, card and public PDF (report and ve
 
 ## 10. History
 
-- 2026-11-10: unlisted `ai-gateway-choosing-a-model` (model comparison and agent cost guide), mirrored from prod PR #88.
+- 2026-11-10: unlisted `ai-gateway-choosing-a-model` mirrored from prod PR #88, then withdrawn the same day (it named the gateway's Claude models, not to be made known yet).
 - 2026-11-05: KB050 OSPool Notebooks (no account needed, UCR login) and the no-sub-accounts rule (each researcher applies, RC guides) on the OSG service page, KB034 and KB035, from the OSG facilitator orientation; prod PR #83.
 - 2026-11-05: OSPool series refresh (KB034-KB037 updated from RC's first access point account: enrollment, OSG username, SSH key upload, two-step login, tested CPU, GPU and container jobs) plus KB047 GPU jobs, KB048 common job types and KB049 containerize your research with an AI coding agent (OSPool, Nautilus, GKE, Cloud Run). OSG service page expanded (hardware, software, limits). Published straight to prod at Chuck's request.
 - 2026-11-04: KB046 Host a web app on Jetstream2 (Chuck, for a lab study server request): DNS name, Caddy HTTPS, systemd, ufw, second admin, data download and backups; every command run on a test m3.tiny VM on the RC allocation, VM deleted. Linked from KB009, KB042 and the Jetstream2 service page.
